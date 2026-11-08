@@ -1,0 +1,23 @@
+# Law Pack Manifest
+# Lists regulatory and primary sources for insurance rules verification
+version: "0.1.0"
+documents:
+  - id: "irdai_master_circular_2024"
+    title: "Master Circular on Operations and Allied Matters of Insurers - Health Insurance"
+    source_url: "https://irdai.gov.in"
+    retrieval_date: "2026-11-07"
+    version: "2024"
+    status: "pending_download"
+  - id: "insurance_ombudsman_rules_2017"
+    title: "Insurance Ombudsman Rules, 2017"
+    source_url: "https://www.cioins.co.in"
+    retrieval_date: "2026-11-07"
+    version: "2017"
+    status: "pending_download"
+  - id: "non_payable_items_list"
+    title: "Standard List of Excluded Expenses (Non-Payable Items / Consumables)"
+    source_url: "https://irdai.gov.in"
+    retrieval_date: "2026-11-07"
+    version: "2024"
+    status: "pending_download"
+

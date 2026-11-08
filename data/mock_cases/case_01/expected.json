@@ -1,0 +1,148 @@
+{
+  "case_id": "case_01",
+  "verdict": {
+    "case_id": "case_01",
+    "label": "LIKELY_WRONGFUL",
+    "summary": "Your claim of ₹1,20,000 was wrongly rejected under the pre-existing disease clause. Your continuous coverage of 49 months exceeds the 36-month waiting period specified in your policy and regulatory rules.",
+    "confidence": 0.95,
+    "needs_human_review": false,
+    "reasons": [
+      "ev_01_ped_clause",
+      "ev_02_repudiation_reason"
+    ]
+  },
+  "facts": {
+    "insurer_name": "Care Health Insurance Limited",
+    "policy_number": "14285739/00/00",
+    "policy_type": "INDIVIDUAL",
+    "insured_name": "Ramesh Kumar Sharma",
+    "claim_number": "CLM-2024-984210",
+    "claim_type": "REIMBURSEMENT",
+    "claim_amount_inr": 120000.0,
+    "settled_amount_inr": 0.0,
+    "disallowed_amount_inr": 120000.0,
+    "rejection_date": "2024-06-15",
+    "rejection_category": "PED",
+    "rejection_reason_text": "We regret to inform you that your claim is repudiated under Clause 4.1 (Pre-Existing Disease Waiting Period) as the patient has history of Hypertension which is a pre-existing condition.",
+    "cited_clause_ref": "Clause 4.1",
+    "cited_clause_text": "Pre-existing Diseases (Code- Excl01): Expenses related to the treatment of a pre-existing disease (PED) and its direct complications shall be excluded until the expiry of 36 months of continuous coverage after the date of inception of the first policy with us.",
+    "policy_first_inception_date": "2020-04-15",
+    "current_period_start": "2024-04-15",
+    "current_period_end": "2025-04-14",
+    "admission_date": "2024-05-20",
+    "discharge_date": "2024-05-24",
+    "diagnosis_text": "Hypertension with symptomatic Cholelithiasis",
+    "treatment_text": "Laparoscopic Cholecystectomy",
+    "hospital_name": "Manipal Hospital, Bengaluru",
+    "ped_alleged": true,
+    "fraud_alleged": false,
+    "room_rent_limit_per_day_inr": 5000.0,
+    "room_rent_actual_per_day_inr": 4500.0,
+    "disallowed_items": [
+      {
+        "name": "Hospitalisation and surgery expenses",
+        "amount_inr": 120000.0
+      }
+    ],
+    "fields_confidence": {
+      "insurer_name": 1.0,
+      "policy_number": 1.0,
+      "policy_type": 1.0,
+      "claim_amount_inr": 1.0,
+      "rejection_category": 1.0,
+      "policy_first_inception_date": 0.98,
+      "admission_date": 0.98
+    },
+    "source_spans": {
+      "insurer_name": {
+        "document": "REJECTION_LETTER",
+        "page": 1,
+        "quote": "Care Health Insurance Limited"
+      },
+      "policy_number": {
+        "document": "POLICY",
+        "page": 1,
+        "quote": "Policy No: 14285739/00/00"
+      },
+      "policy_first_inception_date": {
+        "document": "POLICY",
+        "page": 1,
+        "quote": "First Inception Date: 15/04/2020"
+      },
+      "admission_date": {
+        "document": "DISCHARGE",
+        "page": 1,
+        "quote": "Date of Admission: 20/05/2024"
+      },
+      "discharge_date": {
+        "document": "DISCHARGE",
+        "page": 1,
+        "quote": "Date of Discharge: 24/05/2024"
+      },
+      "rejection_reason_text": {
+        "document": "REJECTION_LETTER",
+        "page": 1,
+        "quote": "We regret to inform you that your claim is repudiated under Clause 4.1 (Pre-Existing Disease Waiting Period) as the patient has history of Hypertension which is a pre-existing condition."
+      }
+    }
+  },
+  "rules": [
+    {
+      "case_id": "case_01",
+      "rule_id": "R1",
+      "name": "PED waiting period",
+      "outcome": "CONTRADICTS_INSURER",
+      "inputs": {
+        "policy_first_inception_date": "2020-04-15",
+        "admission_date": "2024-05-20",
+        "continuous_cover_months": 49,
+        "policy_waiting_months": 36,
+        "statutory_max_waiting_months": 36
+      },
+      "explanation": "Continuous coverage of 49 months exceeds the 36-month waiting period specified in Clause 4.1 and the IRDAI 2024 Master Circular. The pre-existing disease waiting period was fully completed before admission.",
+      "law_ref": "IRDAI Master Circular on Operations and Allied Matters of Insurers - Health Insurance 2024, Clause 4.1 & Insurance Ombudsman Rules 2017"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "ev_01_ped_clause",
+      "case_id": "case_01",
+      "source_type": "POLICY",
+      "source_ref": "Clause 4.1",
+      "quote": "Expenses related to the treatment of a pre-existing disease (PED) and its direct complications shall be excluded until the expiry of 36 months of continuous coverage after the date of inception of the first policy with us.",
+      "page": 7,
+      "verified": true
+    },
+    {
+      "id": "ev_02_repudiation_reason",
+      "case_id": "case_01",
+      "source_type": "LETTER",
+      "source_ref": "Repudiation Notice",
+      "quote": "We regret to inform you that your claim is repudiated under Clause 4.1 (Pre-Existing Disease Waiting Period) as the patient has history of Hypertension which is a pre-existing condition.",
+      "page": 1,
+      "verified": true
+    }
+  ],
+  "money": {
+    "claim_amount_inr": 120000.0,
+    "settled_amount_inr": 0.0,
+    "disallowed_amount_inr": 120000.0
+  },
+  "deadlines": [
+    {
+      "case_id": "case_01",
+      "kind": "GRIEVANCE_REPLY_WINDOW",
+      "due_date": "2024-07-15",
+      "status": "PASSED"
+    },
+    {
+      "case_id": "case_01",
+      "kind": "OMBUDSMAN_LIMIT",
+      "due_date": "2025-06-15",
+      "status": "UPCOMING"
+    }
+  ],
+  "letter_available": true,
+  "warnings": []
+}
+

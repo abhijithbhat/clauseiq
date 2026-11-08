@@ -1,0 +1,66 @@
+# Internal Project Spec (Do Not Commit / Push)
+PROJECT_SPEC.md
+.clauseiq_spec.md
+*.internal.md
+
+# Environment variables & secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+
+# LLM cache
+.llm_cache/
+
+# Node / Frontend
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.vite/
+frontend/dist/
+
+# OS and Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# SQLite & Uploads / Runtime data
+*.db
+*.sqlite3
+clauseiq.db
+/uploads/
+/data/uploads/
+data/uploads/

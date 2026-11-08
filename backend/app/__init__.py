@@ -1,0 +1,2 @@
+"""ClauseIQ FastAPI Application."""
+
