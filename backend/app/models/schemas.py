@@ -155,6 +155,40 @@ class ExtractedFacts(BaseModel):
     room_rent_limit_per_day_inr: Optional[float] = None
     room_rent_actual_per_day_inr: Optional[float] = None
 
+    # --- Rule Input Fields (R1 - R10) ---
+    # R1 & R3: PED & Early Onset
+    ped_waiting_period_months: Optional[int] = None
+    diagnosis_date: Optional[str] = None  # ISO YYYY-MM-DD
+    prior_symptoms_or_consultation_evidence: Optional[bool] = None
+
+    # R2: Moratorium, Continuity & Sum Insured
+    continuous_coverage_months: Optional[int] = None
+    portability_continuity_months: Optional[int] = None
+    sum_insured_inr: Optional[float] = None
+    sum_insured_enhanced_recently: Optional[bool] = None
+
+    # R4 & R5: Waiting Periods & Accident Exemption
+    initial_waiting_period_days: Optional[int] = None
+    specific_illness_waiting_months: Optional[int] = None
+    named_ailment_matched: Optional[str] = None
+    is_accident_case: Optional[bool] = None
+
+    # R6: Room Rent Proportionate Deduction
+    has_room_rent_proportionate_clause: Optional[bool] = None
+    associated_medical_charges_inr: Optional[float] = None
+    non_associated_charges_inr: Optional[float] = None
+    room_rent_deduction_inr: Optional[float] = None
+
+    # R8: Documents & Intimation Delay
+    claim_intimation_date: Optional[str] = None  # ISO YYYY-MM-DD
+    policy_intimation_window_days: Optional[int] = None
+    documents_requested_list: List[str] = Field(default_factory=list)
+
+    # R9 & R10: Grievance Deadlines & Cashless Timelines
+    grievance_sent_date: Optional[str] = None  # ISO YYYY-MM-DD
+    grievance_reply_received_date: Optional[str] = None  # ISO YYYY-MM-DD
+    grievance_satisfactory: Optional[bool] = None
+
     disallowed_items: List[DisallowedItem] = Field(default_factory=list)
     fields_confidence: Dict[str, float] = Field(default_factory=dict)
     source_spans: Dict[str, SourceSpan] = Field(default_factory=dict)
