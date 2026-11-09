@@ -21,6 +21,7 @@ from backend.app.core.llm_client import (
     reset_case_budget,
 )
 from backend.app.extract.extractor import (
+    compute_continuous_coverage_months,
     extract_case_facts,
     format_documents_for_extraction,
     normalize_indian_date,
@@ -91,6 +92,23 @@ def test_indian_date_normalisation() -> None:
     assert normalize_indian_date(None) is None
     assert normalize_indian_date("") is None
     assert normalize_indian_date("not-a-date") == "not-a-date"
+
+
+def test_compute_continuous_coverage_months() -> None:
+    """Verify deterministic calculation of whole completed months between dates."""
+    # 2020-04-15 to 2024-05-20 = 4 years (48 mos) + 1 month = 49 months
+    assert compute_continuous_coverage_months("2020-04-15", "2024-05-20") == 49
+    # With Indian date format
+    assert compute_continuous_coverage_months("15/04/2020", "20/05/2024") == 49
+    # With portability credit of 12 months
+    assert compute_continuous_coverage_months("2020-04-15", "2024-05-20", portability_months=12) == 61
+    # Day not reached: 2024-04-15 to 2024-05-10 = 0 full months (only 25 days)
+    assert compute_continuous_coverage_months("2024-04-15", "2024-05-10") == 0
+    # Exactly one month: 2024-04-15 to 2024-05-15 = 1 month
+    assert compute_continuous_coverage_months("2024-04-15", "2024-05-15") == 1
+    # Missing / None
+    assert compute_continuous_coverage_months(None, "2024-05-20") is None
+    assert compute_continuous_coverage_months("2020-04-15", None) is None
 
 
 def test_rate_limit_exponential_backoff_and_error() -> None:
@@ -207,6 +225,11 @@ def test_extract_case_facts_with_fixture() -> None:
     # Date normalisation check
     assert facts.rejection_date == "2024-06-15"
     assert facts.admission_date == "2024-05-20"
+    assert facts.ped_waiting_period_months == 36
+    assert facts.continuous_coverage_months == 49
+    assert facts.diagnosis_date == "2024-05-18"
+    assert facts.has_room_rent_proportionate_clause is True
+    assert facts.is_accident_case is False
 
     # Validate evidence generation
     assert len(evidence) == len(facts.source_spans)

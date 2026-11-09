@@ -5,9 +5,11 @@ Implements FR4, Section 10, and Section 12:
 - Invokes model-agnostic generate_json with ExtractedFacts schema and temperature=0.0.
 - Guarantees verbatim quote extraction in source_spans.
 - Normalizes Indian dates (DD/MM/YYYY) into ISO YYYY-MM-DD.
+- Deterministically computes continuous coverage months.
 - Transforms source_spans into initial unverified Evidence instances.
 """
 
+import datetime
 import re
 from typing import List, Optional, Tuple
 
@@ -59,6 +61,46 @@ def normalize_indian_date(date_str: Optional[str]) -> Optional[str]:
     return cleaned
 
 
+def compute_continuous_coverage_months(
+    first_inception: Optional[str],
+    admission: Optional[str],
+    portability_months: Optional[int] = 0,
+) -> Optional[int]:
+    """Calculate whole months of continuous cover between first inception and admission.
+
+    Args:
+        first_inception: First inception date (ISO or Indian date).
+        admission: Hospital admission date (ISO or Indian date).
+        portability_months: Continuity credit months carried over via portability.
+
+    Returns:
+        Whole completed months of continuous cover, or None if dates are absent/invalid.
+    """
+    if not first_inception or not admission:
+        return None
+
+    norm_start = normalize_indian_date(first_inception)
+    norm_end = normalize_indian_date(admission)
+    if not norm_start or not norm_end:
+        return None
+
+    try:
+        d_start = datetime.date.fromisoformat(norm_start)
+        d_end = datetime.date.fromisoformat(norm_end)
+    except ValueError:
+        return None
+
+    if d_end < d_start:
+        return 0
+
+    months = (d_end.year - d_start.year) * 12 + (d_end.month - d_start.month)
+    if d_end.day < d_start.day:
+        months -= 1
+
+    credit = portability_months if portability_months is not None else 0
+    return max(0, months + credit)
+
+
 def format_documents_for_extraction(documents: List[DocumentPages]) -> str:
     """Format document pages into labeled text blocks with explicit page identifiers."""
     sections: List[str] = []
@@ -103,24 +145,47 @@ def _convert_source_spans_to_evidence(
 def build_extraction_prompt(doc_text: str) -> str:
     """Construct the strict extraction prompt adhering to Sections 10 and 12."""
     return f"""You are the senior fact extraction engine for ClauseIQ, an assistive platform for Indian health insurance claims.
-Extract structured facts from the uploaded claim documents below.
+Extract structured facts from the uploaded claim documents below into JSON conforming to ExtractedFacts.
 
-EXTRACTION INSTRUCTIONS (SECTIONS 10 & 12):
+EXTRACTION INSTRUCTIONS (SECTIONS 8, 10 & 12):
 1. Verbatim Quotes:
    - For every extracted field, you MUST include an entry in `source_spans[field_name]`.
-   - The `quote` MUST be an EXACT, verbatim, character-for-character substring of the document text. Do NOT reword.
+   - The `quote` MUST be an EXACT, verbatim, character-for-character substring of the document text. Do NOT reword or extrapolate.
    - Record the exact `page` number and `document` kind (POLICY, REJECTION_LETTER, DISCHARGE, OTHER).
 2. Dates:
    - Extract Indian dates (DD/MM/YYYY) and convert them to ISO format (YYYY-MM-DD).
    - If a date is not stated, return null. Never guess or infer dates.
 3. Money Amounts:
    - Extract numbers as floats in INR (e.g. 120000.0). Do not include currency symbols.
-4. Pre-Existing Disease & Fraud:
+4. Pre-Existing Disease (PED) & Fraud (R1, R2, R3):
    - `ped_alleged`: boolean if insurer states or alleges pre-existing disease, else null.
-   - `fraud_alleged`: boolean if insurer alleges fraud/misrepresentation, else false/null.
-5. Missing Facts:
+   - `ped_waiting_period_months`: integer months of PED waiting period in policy (typically 36 or 48).
+   - `diagnosis_date`: date of diagnosis from discharge summary or rejection letter (YYYY-MM-DD).
+   - `prior_symptoms_or_consultation_evidence`: boolean if medical history shows prior consultation before policy start.
+   - `fraud_alleged`: boolean if insurer alleges fraud or intentional misrepresentation.
+   - `continuous_coverage_months`: integer whole months of continuous cover if explicitly stated in schedule.
+   - `portability_continuity_months`: portability credit months if mentioned.
+   - `sum_insured_inr`: total sum insured.
+   - `sum_insured_enhanced_recently`: boolean if sum insured was increased in recent renewal.
+5. Waiting Periods & Accidents (R4, R5):
+   - `initial_waiting_period_days`: initial waiting days in policy (typically 30).
+   - `specific_illness_waiting_months`: waiting months for named ailments in policy (typically 24).
+   - `named_ailment_matched`: name of specific illness if cited by insurer.
+   - `is_accident_case`: boolean, true if hospitalisation resulted from accident or emergency trauma.
+6. Room Rent & Deductions (R6):
+   - `has_room_rent_proportionate_clause`: boolean, true if policy allows proportionate deduction on room rent.
+   - `room_rent_limit_per_day_inr` and `room_rent_actual_per_day_inr`.
+   - `associated_medical_charges_inr`: doctor fees, OT charges subject to room proportionate cut.
+   - `non_associated_charges_inr`: pharmacy, implants, consumables exempt from proportionate cut.
+   - `room_rent_deduction_inr`: deduction amount under room rent clause.
+7. Documents & Deadlines (R8, R9, R10):
+   - `claim_intimation_date`: date claim was notified to insurer/TPA (YYYY-MM-DD).
+   - `policy_intimation_window_days`: allowed days in policy clause for intimation (e.g. 30 days).
+   - `documents_requested_list`: list of specific missing documents requested.
+   - `grievance_sent_date`: date grievance letter was sent to GRO (YYYY-MM-DD), or null if not yet sent.
+8. Missing Facts:
    - If any fact is absent from the documents, return null. Do NOT assume or invent facts.
-6. Rejection reason:
+9. Rejection reason:
    - `rejection_reason_text`: Extract the exact verbatim repudiation sentence from the rejection letter.
    - `cited_clause_ref`: The clause number/name cited (e.g. "Clause 4.1").
    - `rejection_category`: Choose from [PED, NON_DISCLOSURE, WAITING_PERIOD, NON_PAYABLE_OR_DEDUCTION, ROOM_RENT, DOCUMENTS_OR_DELAY, OTHER].
@@ -163,9 +228,21 @@ def extract_case_facts(
     facts.current_period_end = normalize_indian_date(facts.current_period_end)
     facts.admission_date = normalize_indian_date(facts.admission_date)
     facts.discharge_date = normalize_indian_date(facts.discharge_date)
+    facts.diagnosis_date = normalize_indian_date(facts.diagnosis_date)
+    facts.claim_intimation_date = normalize_indian_date(facts.claim_intimation_date)
+    facts.grievance_sent_date = normalize_indian_date(facts.grievance_sent_date)
+    facts.grievance_reply_received_date = normalize_indian_date(facts.grievance_reply_received_date)
+
+    # Deterministic continuous coverage month computation fallback
+    if facts.continuous_coverage_months is None:
+        computed_months = compute_continuous_coverage_months(
+            first_inception=facts.policy_first_inception_date,
+            admission=facts.admission_date,
+            portability_months=facts.portability_continuity_months,
+        )
+        facts.continuous_coverage_months = computed_months
 
     # Transform all source spans into initial unverified Evidence instances
     evidence_items = _convert_source_spans_to_evidence(case_id, facts)
 
     return facts, evidence_items
-
