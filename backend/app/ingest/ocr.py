@@ -43,22 +43,26 @@ def ocr_image(
                     message=f"Image file not found: {path}",
                     hint="Ensure the file path is correct and accessible.",
                 )
-            image_obj = Image.open(path)
+            with Image.open(path) as image_obj:
+                text = pytesseract.image_to_string(image_obj, lang=lang)
+                return text.strip()
         elif isinstance(image_input, bytes):
-            image_obj = Image.open(io.BytesIO(image_input))
+            with Image.open(io.BytesIO(image_input)) as image_obj:
+                text = pytesseract.image_to_string(image_obj, lang=lang)
+                return text.strip()
         elif isinstance(image_input, io.BytesIO):
-            image_obj = Image.open(image_input)
+            with Image.open(image_input) as image_obj:
+                text = pytesseract.image_to_string(image_obj, lang=lang)
+                return text.strip()
         elif hasattr(image_input, "save") or hasattr(image_input, "convert"):
-            image_obj = image_input
+            text = pytesseract.image_to_string(image_input, lang=lang)
+            return text.strip()
         else:
             raise OCRError(
                 code="OCR_INVALID_INPUT",
                 message=f"Unsupported image input type: {type(image_input)}",
                 hint="Provide a valid file path, bytes, BytesIO buffer, or Pillow Image.",
             )
-
-        text = pytesseract.image_to_string(image_obj, lang=lang)
-        return text.strip()
 
     except pytesseract.TesseractNotFoundError as e:
         raise OCRError(

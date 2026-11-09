@@ -1,5 +1,6 @@
 """PDF and image document parser with OCR fallback and FR13 privacy auto-deletion."""
 
+import logging
 from pathlib import Path
 from typing import Dict, Optional, Set, Union
 import fitz  # PyMuPDF
@@ -8,6 +9,8 @@ from backend.app.core.config import settings
 from backend.app.core.errors import IngestError, OCRError
 from backend.app.ingest.ocr import ocr_image, ocr_pixmap
 from backend.app.models.schemas import DocumentKind, DocumentPages
+
+logger = logging.getLogger(__name__)
 
 ALLOWED_EXTENSIONS: Set[str] = {".pdf", ".jpg", ".jpeg", ".png"}
 SCANNED_PAGE_CHAR_THRESHOLD: int = 40  # Under 40 characters triggers OCR fallback
@@ -204,6 +207,6 @@ def parse_document(
         if should_delete and path.exists():
             try:
                 path.unlink()
-            except OSError:
-                pass
+            except OSError as e:
+                logger.warning("Failed to auto-delete temporary upload file %s: %s", path, e)
 

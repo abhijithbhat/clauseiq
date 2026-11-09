@@ -176,9 +176,14 @@ def test_missing_tesseract_binary_raises_graceful_error() -> None:
     """Verify that missing Tesseract executable raises OCRError with code, message, and hint."""
     import pytesseract
 
+    from PIL import Image
+
     with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
         temp_img = Path(f.name)
-        f.write(b"fake image bytes")
+
+    img = Image.new("RGB", (100, 30), color="white")
+    img.save(temp_img, "PNG")
+    img.close()
 
     try:
         with patch(
