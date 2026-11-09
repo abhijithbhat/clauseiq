@@ -205,6 +205,7 @@ def test_extract_case_facts_with_fixture() -> None:
     # Simulate Indian date format coming from raw extraction to test post-processor
     mock_facts.rejection_date = "15/06/2024"
     mock_facts.admission_date = "20/05/2024"
+    mock_facts.grievance_received_date = "22/06/2024"
 
     doc = DocumentPages(
         case_id="case_01",
@@ -225,6 +226,9 @@ def test_extract_case_facts_with_fixture() -> None:
     # Date normalisation check
     assert facts.rejection_date == "2024-06-15"
     assert facts.admission_date == "2024-05-20"
+    assert facts.grievance_received_date == "2024-06-22"
+    assert facts.base_sum_insured_inr == 500000.0
+    assert facts.fraud_established is False
     assert facts.ped_waiting_period_months == 36
     assert facts.continuous_coverage_months == 49
     assert facts.diagnosis_date == "2024-05-18"

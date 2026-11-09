@@ -163,10 +163,14 @@ EXTRACTION INSTRUCTIONS (SECTIONS 8, 10 & 12):
    - `diagnosis_date`: date of diagnosis from discharge summary or rejection letter (YYYY-MM-DD).
    - `prior_symptoms_or_consultation_evidence`: boolean if medical history shows prior consultation before policy start.
    - `fraud_alleged`: boolean if insurer alleges fraud or intentional misrepresentation.
+   - `fraud_established`: boolean, true only if insurer provides documentary proof of established fraud, distinct from mere allegation.
    - `continuous_coverage_months`: integer whole months of continuous cover if explicitly stated in schedule.
    - `portability_continuity_months`: portability credit months if mentioned.
-   - `sum_insured_inr`: total sum insured.
+   - `sum_insured_inr`: total current sum insured (float in INR).
+   - `base_sum_insured_inr`: original base sum insured before any enhancement (float in INR).
    - `sum_insured_enhanced_recently`: boolean if sum insured was increased in recent renewal.
+   - `sum_insured_enhancement_date`: date when sum insured was increased/enhanced (YYYY-MM-DD).
+   - `sum_insured_enhancement_amount_inr`: added sum insured amount (float in INR) for separate 60-month moratorium calculation.
 5. Waiting Periods & Accidents (R4, R5):
    - `initial_waiting_period_days`: initial waiting days in policy (typically 30).
    - `specific_illness_waiting_months`: waiting months for named ailments in policy (typically 24).
@@ -183,6 +187,7 @@ EXTRACTION INSTRUCTIONS (SECTIONS 8, 10 & 12):
    - `policy_intimation_window_days`: allowed days in policy clause for intimation (e.g. 30 days).
    - `documents_requested_list`: list of specific missing documents requested.
    - `grievance_sent_date`: date grievance letter was sent to GRO (YYYY-MM-DD), or null if not yet sent.
+   - `grievance_received_date`: date insurer received the grievance representation (YYYY-MM-DD) per Rule 14 of Ombudsman Rules 2017.
 8. Missing Facts:
    - If any fact is absent from the documents, return null. Do NOT assume or invent facts.
 9. Rejection reason:
@@ -229,8 +234,10 @@ def extract_case_facts(
     facts.admission_date = normalize_indian_date(facts.admission_date)
     facts.discharge_date = normalize_indian_date(facts.discharge_date)
     facts.diagnosis_date = normalize_indian_date(facts.diagnosis_date)
+    facts.sum_insured_enhancement_date = normalize_indian_date(facts.sum_insured_enhancement_date)
     facts.claim_intimation_date = normalize_indian_date(facts.claim_intimation_date)
     facts.grievance_sent_date = normalize_indian_date(facts.grievance_sent_date)
+    facts.grievance_received_date = normalize_indian_date(facts.grievance_received_date)
     facts.grievance_reply_received_date = normalize_indian_date(facts.grievance_reply_received_date)
 
     # Deterministic continuous coverage month computation fallback

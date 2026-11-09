@@ -165,7 +165,11 @@ class ExtractedFacts(BaseModel):
     continuous_coverage_months: Optional[int] = None
     portability_continuity_months: Optional[int] = None
     sum_insured_inr: Optional[float] = None
+    base_sum_insured_inr: Optional[float] = None
     sum_insured_enhanced_recently: Optional[bool] = None
+    sum_insured_enhancement_date: Optional[str] = None  # ISO YYYY-MM-DD
+    sum_insured_enhancement_amount_inr: Optional[float] = None
+    fraud_established: Optional[bool] = None
 
     # R4 & R5: Waiting Periods & Accident Exemption
     initial_waiting_period_days: Optional[int] = None
@@ -186,6 +190,7 @@ class ExtractedFacts(BaseModel):
 
     # R9 & R10: Grievance Deadlines & Cashless Timelines
     grievance_sent_date: Optional[str] = None  # ISO YYYY-MM-DD
+    grievance_received_date: Optional[str] = None  # ISO YYYY-MM-DD
     grievance_reply_received_date: Optional[str] = None  # ISO YYYY-MM-DD
     grievance_satisfactory: Optional[bool] = None
 

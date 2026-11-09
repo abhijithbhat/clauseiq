@@ -71,6 +71,11 @@ def test_mock_case_01_validates_as_analysis_result() -> None:
     assert result.facts.has_room_rent_proportionate_clause is True
     assert result.facts.associated_medical_charges_inr == 80000.0
     assert result.facts.claim_intimation_date == "2024-05-21"
+    assert result.facts.base_sum_insured_inr == 500000.0
+    assert result.facts.sum_insured_enhancement_date is None
+    assert result.facts.sum_insured_enhancement_amount_inr is None
+    assert result.facts.fraud_established is False
+    assert result.facts.grievance_received_date == "2024-06-22"
     assert len(result.facts.disallowed_items) == 1
     assert result.facts.disallowed_items[0].amount_inr == 120000.0
 
