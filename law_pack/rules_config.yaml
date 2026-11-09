@@ -1,0 +1,153 @@
+# Rules Configuration for ClauseIQ (v0.1)
+# Externalized regulatory thresholds, statutory citations, and rules metadata
+version: "0.1.0"
+
+# General Policy Coverage & Continuity Settings (Schedule III, Para 1.3)
+coverage_continuity:
+  grace_period_days_monthly_mode: 15
+  grace_period_days_other_modes: 30
+  source_ref: "IRDAI (Insurance Products) Regulations, 2024, Schedule III, Para 1.3"
+  preserves_waiting_period_credit: true
+
+rules:
+  R1:
+    rule_id: "R1"
+    name: "PED waiting period"
+    statutory_max_waiting_months: 36
+    ped_lookback_months: 36
+    ped_definition_source: "IRDAI (Insurance Products) Regulations, 2024, Schedule III, Para 1.6"
+    ped_ceiling_source: "IRDAI (Insurance Products) Regulations, 2024, Schedule III, Para 7"
+    law_ref: "IRDAI (Insurance Products) Regulations, 2024, Schedule III, Para 7 & Para 1.6"
+    require_policy_extraction: true
+    verified: true
+
+  R2:
+    rule_id: "R2"
+    name: "Moratorium period"
+    moratorium_threshold_months: 60
+    enhanced_si_separate_clock: true
+    fraud_exception_requires_establishment: true
+    legal_authority: "IRDAI (Insurance Products) Regulations, 2024, Schedule III, Para 8"
+    law_ref: "IRDAI (Insurance Products) Regulations, 2024, Schedule III, Para 8"
+    verified: true
+
+  R3:
+    rule_id: "R3"
+    name: "Early-onset rule"
+    enabled: false
+    status: "pending_verification"
+    source_ref: "Proposed three-month rule"
+    law_ref: null
+    verified: false
+
+  R4:
+    rule_id: "R4"
+    name: "Specific illness waiting period"
+    statutory_max_waiting_months: 36
+    require_policy_extraction: true
+    accident_exemption_source: "IRDAI (Insurance Products) Regulations, 2024, Schedule III, Para 1.7"
+    source_ref: "IRDAI (Insurance Products) Regulations, 2024, Schedule III, Para 1.7"
+    law_ref: "IRDAI (Insurance Products) Regulations, 2024, Schedule III, Para 1.7 & Policy Terms"
+    verified: true
+
+  R5:
+    rule_id: "R5"
+    name: "Initial waiting period"
+    require_policy_extraction: true
+    verify_policy_accident_exemption: true
+    universal_statutory_accident_exemption: false
+    source_ref: "Policy Schedule Initial Waiting Clause & IRDAI (Insurance Products) Regulations, 2024"
+    law_ref: "Policy Terms (Initial Waiting Clause) & IRDAI (Insurance Products) Regulations 2024"
+    verified: true
+
+  R6:
+    rule_id: "R6"
+    name: "Room-rent proportionate deduction"
+    source_status: "superseded_historical_reference"
+    verification_status: "pending_verification"
+    circular_ref_2020: "IRDAI/HLT/REG/CIR/151/06/2020 (Norms on Proportionate Deductions, 11 June 2020 - Superseded Historical Reference)"
+    circular_ref_2024: "IRDAI/PP&GR/CIR/MISC/117/9/2024 (Master Circular on Protection of Policyholders' Interests, 5 Sept 2024)"
+    provisions_2020_circular:
+      pharmacy_and_consumables: "No proportionate deduction permitted on the cost of pharmacy and consumables"
+      implants_and_medical_devices: "No proportionate deduction permitted on the cost of implants and medical devices"
+      diagnostic_costs: "No proportionate deduction permitted on the cost of diagnostics"
+      icu_charges: "No proportionate deduction permitted on ICU charges; ICU charges cannot be subject to proportionate deduction based on room category"
+      non_differential_billing: "Where hospitals do not charge room-category differentiated fees for services or consultations, no proportionate deduction is permitted"
+    statutory_exempt_categories_historical:
+      - "pharmacy_and_medicines"
+      - "consumables"
+      - "implants_and_medical_devices"
+      - "diagnostics"
+      - "icu"
+    verify_against_policy_wording: true
+    law_ref: "Policy Terms & IRDAI Circular IRDAI/HLT/REG/CIR/151/06/2020 (Historical Reference)"
+    verified: false
+
+  R7:
+    rule_id: "R7"
+    name: "Non-payable items"
+    catalog_path: "law_pack/non_payable_items.yaml"
+    source_status: "superseded_historical_reference"
+    catalog_verification_status: "pending_verification"
+    catalog_complete: false
+    total_historical_entries: 146
+    lists_breakdown:
+      list_1_optional_items: 68
+      list_2_room_charges_subsumed: 37
+      list_3_procedure_charges_subsumed: 23
+      list_4_treatment_costs_subsumed: 18
+    verify_against_policy_exclusions: true
+    list_1_is_optional_cover_not_universal_exclusion: true
+    fallback_on_unclassified_item: "UNKNOWN"
+    allow_definitive_verdict_on_historical_catalog: false
+    law_ref: "IRDAI Master Circular on Standardization 2020 (Annexure I - Historical Reference) & Policy Terms"
+    verified: false
+
+  R8:
+    rule_id: "R8"
+    name: "Missing documents or delayed claim intimation"
+    supersede_circular_2011: true
+    primary_source_ref: "IRDAI/PP&GR/CIR/MISC/117/9/2024 (Master Circular on Protection of Policyholders' Interests, 5 Sept 2024)"
+    prohibit_rejection_for_delay: true
+    prohibit_rejection_for_want_of_documents: true
+    insurer_tpa_hospital_collection_mandate: true
+    hospital_collection_scope: "hospitals (applies to all hospitals, not restricted to network hospitals only)"
+    law_ref: "IRDAI Master Circular on Protection of Policyholders' Interests, 2024, Ref: IRDAI/PP&GR/CIR/MISC/117/9/2024"
+    verified: true
+
+  R9:
+    rule_id: "R9"
+    name: "Grievance and Insurance Ombudsman deadlines"
+    # Insurer Grievance Target: 14 days under 2024 Policyholders Protection Circular Section VI, Paragraph 2
+    insurer_grievance_tat_days: 14
+    insurer_grievance_tat_source: "IRDAI Master Circular on Protection of Policyholders' Interests, 2024, Section VI, Paragraph 2"
+
+    # Ombudsman No-Response Prerequisite: 1 month from representation receipt by insurer
+    ombudsman_silence_prerequisite_wait_months: 1
+    ombudsman_silence_prerequisite_basis: "representation_received_date"
+    ombudsman_silence_prerequisite_source: "Insurance Ombudsman Rules, 2017, Rule 14(3)(a)(ii)"
+
+    # Ombudsman Limitation on Rejection: 1 year from receipt of rejection/unsatisfactory response
+    ombudsman_limitation_years: 1
+    ombudsman_limitation_decision_basis: "decision_received_date"
+    ombudsman_limitation_decision_source: "Insurance Ombudsman Rules, 2017, Rule 14(3)(b)(i)-(ii)"
+
+    # Ombudsman Limitation in No-Response Case: 1 year from expiry of 1 month after representation was sent
+    ombudsman_limitation_no_response_basis: "representation_sent_date_plus_one_month"
+    ombudsman_limitation_no_response_source: "Insurance Ombudsman Rules, 2017, Rule 14(3)(b)(iii)"
+
+    # Condonation of Delay: Ombudsman discretion under Rule 14(4)
+    ombudsman_delay_condonation_permitted: true
+    ombudsman_delay_condonation_source: "Insurance Ombudsman Rules, 2017, Rule 14(4)"
+
+    # Monetary Limits (Stored Separately)
+    # 1. Claim Amount Jurisdiction Limit: Master Circular 2024 Section VI.3(i)
+    ombudsman_claim_jurisdiction_limit_inr: 5000000.0
+    ombudsman_claim_jurisdiction_source: "IRDAI Master Circular on Protection of Policyholders' Interests, 2024, Section VI.3(i)"
+
+    # 2. Compensation Award Ceiling: Ombudsman Rule 17(3) amended by G.S.R. 828(E)
+    ombudsman_compensation_award_ceiling_inr: 5000000.0
+    ombudsman_compensation_award_source: "Insurance Ombudsman Rules, 2017, Rule 17(3) (as amended by G.S.R. 828(E) dated 9 Nov 2023)"
+
+    law_ref: "Insurance Ombudsman Rules, 2017 (Rules 14 & 17) & IRDAI Master Circular on Protection of Policyholders' Interests 2024"
+    verified: true
