@@ -64,6 +64,13 @@ def test_mock_case_01_validates_as_analysis_result() -> None:
     assert result.facts.policy_first_inception_date == "2020-04-15"
     assert result.facts.admission_date == "2024-05-20"
     assert result.facts.discharge_date == "2024-05-24"
+    assert result.facts.ped_waiting_period_months == 36
+    assert result.facts.continuous_coverage_months == 49
+    assert result.facts.diagnosis_date == "2024-05-18"
+    assert result.facts.is_accident_case is False
+    assert result.facts.has_room_rent_proportionate_clause is True
+    assert result.facts.associated_medical_charges_inr == 80000.0
+    assert result.facts.claim_intimation_date == "2024-05-21"
     assert len(result.facts.disallowed_items) == 1
     assert result.facts.disallowed_items[0].amount_inr == 120000.0
 
