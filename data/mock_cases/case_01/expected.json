@@ -3,7 +3,7 @@
   "verdict": {
     "case_id": "case_01",
     "label": "LIKELY_WRONGFUL",
-    "summary": "Your claim of ₹1,20,000 was wrongly rejected under the pre-existing disease clause. Your continuous coverage of 49 months exceeds the 36-month waiting period specified in your policy and regulatory rules.",
+    "summary": "Your claim of \u20b91,20,000 was wrongly rejected under the pre-existing disease clause. Your continuous coverage of 49 months exceeds the 36-month waiting period specified in your policy and regulatory rules.",
     "confidence": 0.95,
     "needs_human_review": false,
     "reasons": [
@@ -96,12 +96,12 @@
         "quote": "First Inception Date: 15/04/2020"
       },
       "admission_date": {
-        "document": "DISCHARGE",
+        "document": "REJECTION_LETTER",
         "page": 1,
         "quote": "Date of Admission: 20/05/2024"
       },
       "discharge_date": {
-        "document": "DISCHARGE",
+        "document": "REJECTION_LETTER",
         "page": 1,
         "quote": "Date of Discharge: 24/05/2024"
       },
@@ -171,4 +171,3 @@
   "letter_available": true,
   "warnings": []
 }
-

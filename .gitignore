@@ -1,7 +1,8 @@
-# Internal Project Spec (Do Not Commit / Push)
+# Internal Project Spec & Agent Skills (Do Not Commit / Push)
 PROJECT_SPEC.md
 .clauseiq_spec.md
 *.internal.md
+.agents/
 
 # Environment variables & secrets
 .env
