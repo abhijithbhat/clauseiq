@@ -16,6 +16,7 @@ from backend.app.models.schemas import (
     Evidence,
     EvidenceSourceType,
     ExtractedFacts,
+    GrievanceReplyStatus,
     MoneySummary,
     PolicyChunk,
     PolicyType,
@@ -76,6 +77,7 @@ def test_mock_case_01_validates_as_analysis_result() -> None:
     assert result.facts.sum_insured_enhancement_amount_inr is None
     assert result.facts.fraud_established is False
     assert result.facts.grievance_received_date == "2024-06-22"
+    assert result.facts.grievance_reply_status == GrievanceReplyStatus.UNKNOWN
     assert len(result.facts.disallowed_items) == 1
     assert result.facts.disallowed_items[0].amount_inr == 120000.0
 
@@ -86,6 +88,7 @@ def test_mock_case_01_validates_as_analysis_result() -> None:
     assert rule_r1.outcome == RuleOutcome.CONTRADICTS_INSURER
     assert rule_r1.inputs["continuous_cover_months"] == 49
     assert rule_r1.inputs["policy_waiting_months"] == 36
+    assert rule_r1.supporting_evidence_ids == ["ev_01_ped_clause", "ev_02_repudiation_notice"]
 
     # Validate evidence
     assert len(result.evidence) == 2
@@ -179,4 +182,28 @@ def test_policy_chunk_and_document_pages() -> None:
     )
     assert pages.ocr_used is False
     assert len(pages.text_by_page) == 2
+
+
+def test_grievance_reply_status_and_supporting_evidence_defaults() -> None:
+    """Ensure grievance_reply_status defaults to UNKNOWN with 4 states and supporting_evidence_ids defaults to []."""
+    facts = ExtractedFacts()
+    assert facts.grievance_reply_status == GrievanceReplyStatus.UNKNOWN
+    assert facts.grievance_reply_status.value == "UNKNOWN"
+
+    # Verify all 4 states
+    assert GrievanceReplyStatus.REPLY_RECEIVED.value == "REPLY_RECEIVED"
+    assert GrievanceReplyStatus.AWAITING_REPLY.value == "AWAITING_REPLY"
+    assert GrievanceReplyStatus.CONFIRMED_NO_RESPONSE.value == "CONFIRMED_NO_RESPONSE"
+    assert GrievanceReplyStatus.UNKNOWN.value == "UNKNOWN"
+
+    rule = RuleResult(
+        case_id="case_test",
+        rule_id="R1",
+        name="Test Rule",
+        outcome=RuleOutcome.SUPPORTS_INSURER,
+        inputs={},
+        explanation="Test explanation",
+    )
+    assert rule.supporting_evidence_ids == []
+    assert isinstance(rule.supporting_evidence_ids, list)
 

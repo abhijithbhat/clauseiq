@@ -189,6 +189,7 @@ def build_case_01(base_dir: Path) -> None:
             "grievance_sent_date": "2024-06-20",
             "grievance_received_date": "2024-06-22",
             "grievance_reply_received_date": None,
+            "grievance_reply_status": "UNKNOWN",
             "grievance_satisfactory": None,
             "disallowed_items": [
                 {"name": "Hospitalisation and surgery expenses", "amount_inr": 120000.0}
@@ -250,6 +251,7 @@ def build_case_01(base_dir: Path) -> None:
                 },
                 "explanation": "Continuous coverage of 49 months exceeds the 36-month waiting period specified in Clause 4.1 and the IRDAI 2024 Master Circular. The pre-existing disease waiting period was fully completed before admission.",
                 "law_ref": "IRDAI Master Circular on Operations and Allied Matters of Insurers - Health Insurance 2024, Clause 4.1 & Insurance Ombudsman Rules 2017",
+                "supporting_evidence_ids": ["ev_01_ped_clause", "ev_02_repudiation_notice"],
             }
         ],
         "evidence": [
@@ -452,6 +454,7 @@ def build_case_02(base_dir: Path) -> None:
             "grievance_sent_date": "2024-08-18",
             "grievance_received_date": "2024-08-20",
             "grievance_reply_received_date": None,
+            "grievance_reply_status": "UNKNOWN",
             "grievance_satisfactory": None,
             "disallowed_items": [
                 {"name": "Hospitalisation and Angioplasty Surgery", "amount_inr": 245000.0}
@@ -512,6 +515,7 @@ def build_case_02(base_dir: Path) -> None:
                 },
                 "explanation": "The policy has completed 64 months of continuous coverage without break, which exceeds the statutory 60-month moratorium ceiling under Section 45 of the Insurance Act, 1938 and IRDAI Master Circular 2024. No claim can be repudiated on grounds of misstatement or non-disclosure after expiry of 60 months unless fraud is established.",
                 "law_ref": "Insurance Act 1938 Section 45 & IRDAI Master Circular 2024 Para 12",
+                "supporting_evidence_ids": ["ev_01_moratorium_clause", "ev_02_repudiation_notice"],
             }
         ],
         "evidence": [
@@ -711,6 +715,7 @@ def build_case_03(base_dir: Path) -> None:
             "grievance_sent_date": "2024-09-20",
             "grievance_received_date": "2024-09-22",
             "grievance_reply_received_date": None,
+            "grievance_reply_status": "UNKNOWN",
             "grievance_satisfactory": None,
             "disallowed_items": [
                 {"name": "Cataract Day Care Surgery & Lens", "amount_inr": 85000.0}
@@ -771,6 +776,7 @@ def build_case_03(base_dir: Path) -> None:
                 },
                 "explanation": "The treatment for Cataract occurred after 10 months of continuous coverage, which is less than the mandatory 24-month specific illness waiting period defined under Clause 4.2. As the treatment was not necessitated by an accident, the repudiation is contractually supported.",
                 "law_ref": "IRDAI Master Circular 2024 Clause 4.2 & Standard Policy Terms",
+                "supporting_evidence_ids": ["ev_01_specific_waiting_clause", "ev_02_repudiation_notice"],
             }
         ],
         "evidence": [

@@ -63,6 +63,7 @@
     "grievance_sent_date": "2024-09-20",
     "grievance_received_date": "2024-09-22",
     "grievance_reply_received_date": null,
+    "grievance_reply_status": "UNKNOWN",
     "grievance_satisfactory": null,
     "disallowed_items": [
       {
@@ -125,7 +126,11 @@
         "is_accident_case": false
       },
       "explanation": "The treatment for Cataract occurred after 10 months of continuous coverage, which is less than the mandatory 24-month specific illness waiting period defined under Clause 4.2. As the treatment was not necessitated by an accident, the repudiation is contractually supported.",
-      "law_ref": "IRDAI Master Circular 2024 Clause 4.2 & Standard Policy Terms"
+      "law_ref": "IRDAI Master Circular 2024 Clause 4.2 & Standard Policy Terms",
+      "supporting_evidence_ids": [
+        "ev_01_specific_waiting_clause",
+        "ev_02_repudiation_notice"
+      ]
     }
   ],
   "evidence": [

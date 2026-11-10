@@ -63,6 +63,7 @@
     "grievance_sent_date": "2024-08-18",
     "grievance_received_date": "2024-08-20",
     "grievance_reply_received_date": null,
+    "grievance_reply_status": "UNKNOWN",
     "grievance_satisfactory": null,
     "disallowed_items": [
       {
@@ -125,7 +126,11 @@
         "base_sum_insured_inr": 500000.0
       },
       "explanation": "The policy has completed 64 months of continuous coverage without break, which exceeds the statutory 60-month moratorium ceiling under Section 45 of the Insurance Act, 1938 and IRDAI Master Circular 2024. No claim can be repudiated on grounds of misstatement or non-disclosure after expiry of 60 months unless fraud is established.",
-      "law_ref": "Insurance Act 1938 Section 45 & IRDAI Master Circular 2024 Para 12"
+      "law_ref": "Insurance Act 1938 Section 45 & IRDAI Master Circular 2024 Para 12",
+      "supporting_evidence_ids": [
+        "ev_01_moratorium_clause",
+        "ev_02_repudiation_notice"
+      ]
     }
   ],
   "evidence": [
