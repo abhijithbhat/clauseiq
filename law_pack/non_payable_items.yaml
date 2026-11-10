@@ -1,0 +1,149 @@
+# Standard List of Excluded Expenses (Non-Payable Items / Consumables)
+# Regulatory Status: Incomplete Historical Reference (Superseded by 2024 Health Master Circular, Annexure 6)
+# Primary Historical Source:
+# - IRDAI Master Circular on Standardization of Health Insurance Products
+#   Ref: IRDAI/HLT/REG/CIR/193/07/2020 (dated 22 July 2020), Annexure I
+# Regulatory Source History:
+# - IRDA/HLT/REG/CIR/146/07/2016 (Standardization Guidelines, dated 29 July 2016)
+# - IRDAI/HLT/REG/CIR/176/09/2019 (Modification Guidelines, dated 27 September 2019)
+# - IRDAI/HLT/REG/CIR/193/07/2020 (Consolidated Standardization Master Circular, dated 22 July 2020)
+# - Superseded by IRDAI/HLT/CIR/PRO/84/5/2024 (Annexure 6)
+
+version: "0.1.0"
+catalog_complete: false
+status: "PENDING_VERIFICATION"
+source_status: "superseded_historical_reference"
+total_historical_entries: 146
+notes: >
+  Historical schedule comprises 146 standard items divided across four distinct lists:
+  List I: 68 optional items (optional-cover category, not a universal exclusion; liability must be checked against policy wording).
+  List II: 37 items subsumed into room charges (e.g. admission kit, bed pan, face mask, gown, shoe cover, visitor pass).
+  List III: 23 items subsumed into procedure charges (e.g. hair removal cream, disposable razors, surgical drapes/tapes).
+  List IV: 18 items subsumed into treatment costs (e.g. diagnostic hospitalisation, urine containers, infusion pump cost).
+  Status remains explicitly PENDING_VERIFICATION as an incomplete historical reference.
+  Engine Rule R7 must NOT make definitive deductions or verdicts based solely on this incomplete catalogue and must return UNKNOWN when items are unverified in policy schedules.
+
+categories:
+  list_1_optional_items:
+    item_count: 68
+    classification: "Items for which optional cover may be offered by insurers"
+    regulatory_rule: "Optional cover category. Not a universal exclusion; liability depends on specific policy wording."
+    sample_items:
+      - original_source_name: "BABY FOOD"
+        source_list: "List I"
+        source_item_number: 1
+        normalized_name: "baby food"
+      - original_source_name: "BEAUTY SERVICES"
+        source_list: "List I"
+        source_item_number: 3
+        normalized_name: "beauty services"
+      - original_source_name: "BELTS/ BRACES"
+        source_list: "List I"
+        source_item_number: 4
+        normalized_name: "belts / braces"
+      - original_source_name: "BUDS"
+        source_list: "List I"
+        source_item_number: 5
+        normalized_name: "buds"
+      - original_source_name: "THERMOMETER"
+        source_list: "List I"
+        source_item_number: 41
+        normalized_name: "thermometer"
+      - original_source_name: "CREAMS POWDERS LOTIONS"
+        source_list: "List I"
+        source_item_number: 54
+        normalized_name: "creams, powders and lotions"
+      - original_source_name: "GLOVES"
+        source_list: "List I"
+        source_item_number: 56
+        normalized_name: "gloves"
+
+  list_2_items_subsumed_into_room_charges:
+    item_count: 37
+    classification: "Items that are to be subsumed into Room Charges"
+    regulatory_rule: "Part of room rent / room accommodation; cannot be billed as separate line items."
+    sample_items:
+      - original_source_name: "HAND WASH"
+        source_list: "List II"
+        source_item_number: 2
+        normalized_name: "hand wash"
+      - original_source_name: "SHOE COVER"
+        source_list: "List II"
+        source_item_number: 3
+        normalized_name: "shoe cover"
+      - original_source_name: "FOOT COVER"
+        source_list: "List II"
+        source_item_number: 8
+        normalized_name: "foot cover"
+      - original_source_name: "GOWN"
+        source_list: "List II"
+        source_item_number: 9
+        normalized_name: "gown"
+      - original_source_name: "TISSUE PAPER"
+        source_list: "List II"
+        source_item_number: 11
+        normalized_name: "tissue paper"
+      - original_source_name: "BED PAN"
+        source_list: "List II"
+        source_item_number: 14
+        normalized_name: "bed pan"
+      - original_source_name: "FACE MASK"
+        source_list: "List II"
+        source_item_number: 15
+        normalized_name: "face mask"
+      - original_source_name: "ADMISSION KIT"
+        source_list: "List II"
+        source_item_number: 27
+        normalized_name: "admission kit"
+      - original_source_name: "ENTRANCE PASS / VISITORS PASS CHARGES"
+        source_list: "List II"
+        source_item_number: 32
+        normalized_name: "entrance pass / visitors pass"
+
+  list_3_items_subsumed_into_procedure_charges:
+    item_count: 23
+    classification: "Items that are to be subsumed into Procedure Charges"
+    regulatory_rule: "Part of procedure / surgical charges; cannot be billed as separate line items."
+    sample_items:
+      - original_source_name: "HAIR REMOVAL CREAM"
+        source_list: "List III"
+        source_item_number: 1
+        normalized_name: "hair removal cream"
+      - original_source_name: "DISPOSABLE RAZORS CHARGES (for site preparation)"
+        source_list: "List III"
+        source_item_number: 2
+        normalized_name: "disposable razors"
+      - original_source_name: "COTTON"
+        source_list: "List III"
+        source_item_number: 18
+        normalized_name: "cotton"
+      - original_source_name: "COTTON BANDAGE"
+        source_list: "List III"
+        source_item_number: 19
+        normalized_name: "cotton bandage"
+      - original_source_name: "SURGICAL TAPE"
+        source_list: "List III"
+        source_item_number: 20
+        normalized_name: "surgical tape"
+      - original_source_name: "APRON"
+        source_list: "List III"
+        source_item_number: 21
+        normalized_name: "apron"
+
+  list_4_items_subsumed_into_treatment_costs:
+    item_count: 18
+    classification: "Items that are to be subsumed into Treatment Costs"
+    regulatory_rule: "Part of hospital treatment costs; cannot be billed as separate line items."
+    sample_items:
+      - original_source_name: "HOSPITALISATION FOR EVALUATION/ DIAGNOSTIC PURPOSE"
+        source_list: "List IV"
+        source_item_number: 2
+        normalized_name: "hospitalisation for evaluation / diagnostic purpose"
+      - original_source_name: "URINE CONTAINER"
+        source_list: "List IV"
+        source_item_number: 3
+        normalized_name: "urine container"
+      - original_source_name: "INFUSION PUMP- COST"
+        source_list: "List IV"
+        source_item_number: 7
+        normalized_name: "infusion pump cost"
