@@ -3,7 +3,7 @@
   "verdict": {
     "case_id": "case_01",
     "label": "LIKELY_WRONGFUL",
-    "summary": "Your claim of ₹1,20,000 was wrongly rejected under the pre-existing disease clause. Your continuous coverage of 49 months exceeds the 36-month waiting period specified in your policy and regulatory rules.",
+    "summary": "Your claim of \u20b91,20,000 was wrongly rejected under the pre-existing disease clause. Your continuous coverage of 49 months exceeds the 36-month waiting period specified in your policy and regulatory rules.",
     "confidence": 0.95,
     "needs_human_review": false,
     "reasons": [
@@ -63,6 +63,7 @@
     "grievance_sent_date": "2024-06-20",
     "grievance_received_date": "2024-06-22",
     "grievance_reply_received_date": null,
+    "grievance_reply_status": "UNKNOWN",
     "grievance_satisfactory": null,
     "disallowed_items": [
       {
@@ -96,12 +97,12 @@
         "quote": "First Inception Date: 15/04/2020"
       },
       "admission_date": {
-        "document": "DISCHARGE",
+        "document": "REJECTION_LETTER",
         "page": 1,
         "quote": "Date of Admission: 20/05/2024"
       },
       "discharge_date": {
-        "document": "DISCHARGE",
+        "document": "REJECTION_LETTER",
         "page": 1,
         "quote": "Date of Discharge: 24/05/2024"
       },
@@ -126,7 +127,11 @@
         "statutory_max_waiting_months": 36
       },
       "explanation": "Continuous coverage of 49 months exceeds the 36-month waiting period specified in Clause 4.1 and the IRDAI 2024 Master Circular. The pre-existing disease waiting period was fully completed before admission.",
-      "law_ref": "IRDAI Master Circular on Operations and Allied Matters of Insurers - Health Insurance 2024, Clause 4.1 & Insurance Ombudsman Rules 2017"
+      "law_ref": "IRDAI Master Circular on Operations and Allied Matters of Insurers - Health Insurance 2024, Clause 4.1 & Insurance Ombudsman Rules 2017",
+      "supporting_evidence_ids": [
+        "ev_01_ped_clause",
+        "ev_02_repudiation_notice"
+      ]
     }
   ],
   "evidence": [
@@ -171,4 +176,3 @@
   "letter_available": true,
   "warnings": []
 }
-

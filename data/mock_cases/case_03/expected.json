@@ -1,0 +1,177 @@
+{
+  "case_id": "case_03",
+  "verdict": {
+    "case_id": "case_03",
+    "label": "LIKELY_VALID",
+    "summary": "Your claim of \u20b985,000 was rejected by Niva Bupa Health Insurance Co. Ltd. under policy terms for waiting period. The policy documents confirm a 24-month specific waiting period for cataract surgery, whereas your continuous coverage is 10 months. Because this was not caused by an accident, the insurer's rejection aligns with the contractual waiting period.",
+    "confidence": 0.95,
+    "needs_human_review": false,
+    "reasons": [
+      "ev_01_specific_waiting_clause",
+      "ev_02_repudiation_notice"
+    ]
+  },
+  "facts": {
+    "insurer_name": "Niva Bupa Health Insurance Co. Ltd.",
+    "policy_number": "NB-30918274-01",
+    "policy_type": "INDIVIDUAL",
+    "insured_name": "Anand Verma",
+    "claim_number": "NB-CLM-2024-55412",
+    "claim_type": "REIMBURSEMENT",
+    "claim_amount_inr": 85000.0,
+    "settled_amount_inr": 0.0,
+    "disallowed_amount_inr": 85000.0,
+    "rejection_date": "2024-09-12",
+    "rejection_category": "WAITING_PERIOD",
+    "rejection_reason_text": "We regret to inform you that your claim for Cataract Surgery is repudiated under Clause 4.2 (Specific Illness Waiting Period) as the surgery occurred within the 24-month specific waiting period from the date of policy inception.",
+    "cited_clause_ref": "Clause 4.2",
+    "cited_clause_text": "Specific Illness Waiting Period (Code- Excl02): Expenses related to the treatment of Cataract, Benign Prostatic Hypertrophy, Hernia, Hydrocele, and Joint Replacement Surgeries shall be excluded until the expiry of 24 months of continuous coverage after the date of inception of the first policy.",
+    "policy_first_inception_date": "2023-11-01",
+    "current_period_start": "2023-11-01",
+    "current_period_end": "2024-10-31",
+    "admission_date": "2024-09-02",
+    "discharge_date": "2024-09-03",
+    "diagnosis_text": "Mature Senile Cataract Left Eye",
+    "treatment_text": "Phacoemulsification with Foldable IOL Implantation",
+    "hospital_name": "Dr. Agarwal's Eye Hospital, Bengaluru",
+    "ped_alleged": false,
+    "fraud_alleged": false,
+    "room_rent_limit_per_day_inr": 4000.0,
+    "room_rent_actual_per_day_inr": 3500.0,
+    "ped_waiting_period_months": 36,
+    "diagnosis_date": "2024-08-25",
+    "prior_symptoms_or_consultation_evidence": false,
+    "continuous_coverage_months": 10,
+    "portability_continuity_months": 0,
+    "sum_insured_inr": 400000.0,
+    "base_sum_insured_inr": 400000.0,
+    "sum_insured_enhanced_recently": false,
+    "sum_insured_enhancement_date": null,
+    "sum_insured_enhancement_amount_inr": null,
+    "fraud_established": false,
+    "initial_waiting_period_days": 30,
+    "specific_illness_waiting_months": 24,
+    "named_ailment_matched": "Cataract",
+    "is_accident_case": false,
+    "has_room_rent_proportionate_clause": false,
+    "associated_medical_charges_inr": 70000.0,
+    "non_associated_charges_inr": 15000.0,
+    "room_rent_deduction_inr": 0.0,
+    "claim_intimation_date": "2024-09-02",
+    "policy_intimation_window_days": 30,
+    "documents_requested_list": [],
+    "grievance_sent_date": "2024-09-20",
+    "grievance_received_date": "2024-09-22",
+    "grievance_reply_received_date": null,
+    "grievance_reply_status": "UNKNOWN",
+    "grievance_satisfactory": null,
+    "disallowed_items": [
+      {
+        "name": "Cataract Day Care Surgery & Lens",
+        "amount_inr": 85000.0
+      }
+    ],
+    "fields_confidence": {
+      "insurer_name": 1.0,
+      "policy_number": 1.0,
+      "policy_type": 1.0,
+      "claim_amount_inr": 1.0,
+      "rejection_category": 1.0,
+      "policy_first_inception_date": 0.98,
+      "admission_date": 0.98
+    },
+    "source_spans": {
+      "insurer_name": {
+        "document": "REJECTION_LETTER",
+        "page": 1,
+        "quote": "Niva Bupa Health Insurance Co. Ltd."
+      },
+      "policy_number": {
+        "document": "POLICY",
+        "page": 1,
+        "quote": "Policy Number: NB-30918274-01"
+      },
+      "policy_first_inception_date": {
+        "document": "POLICY",
+        "page": 1,
+        "quote": "First Inception Date: 01/11/2023"
+      },
+      "admission_date": {
+        "document": "REJECTION_LETTER",
+        "page": 1,
+        "quote": "Date of Admission: 02/09/2024"
+      },
+      "discharge_date": {
+        "document": "REJECTION_LETTER",
+        "page": 1,
+        "quote": "Date of Discharge: 03/09/2024"
+      },
+      "rejection_reason_text": {
+        "document": "REJECTION_LETTER",
+        "page": 1,
+        "quote": "We regret to inform you that your claim for Cataract Surgery is repudiated under Clause 4.2 (Specific Illness Waiting Period) as the surgery occurred within the 24-month specific waiting period from the date of policy inception."
+      }
+    }
+  },
+  "rules": [
+    {
+      "case_id": "case_03",
+      "rule_id": "R4",
+      "name": "Specific Illness Waiting Period",
+      "outcome": "SUPPORTS_INSURER",
+      "inputs": {
+        "continuous_coverage_months": 10,
+        "specific_illness_waiting_months": 24,
+        "named_ailment": "Cataract",
+        "is_accident_case": false
+      },
+      "explanation": "The treatment for Cataract occurred after 10 months of continuous coverage, which is less than the mandatory 24-month specific illness waiting period defined under Clause 4.2. As the treatment was not necessitated by an accident, the repudiation is contractually supported.",
+      "law_ref": "IRDAI Master Circular 2024 Clause 4.2 & Standard Policy Terms",
+      "supporting_evidence_ids": [
+        "ev_01_specific_waiting_clause",
+        "ev_02_repudiation_notice"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "ev_01_specific_waiting_clause",
+      "case_id": "case_03",
+      "source_type": "POLICY",
+      "source_ref": "Clause 4.2",
+      "quote": "Specific Illness Waiting Period (Code- Excl02): Expenses related to the treatment of Cataract, Benign Prostatic Hypertrophy, Hernia, Hydrocele, and Joint Replacement Surgeries shall be excluded until the expiry of 24 months of continuous coverage after the date of inception of the first policy.",
+      "page": 6,
+      "verified": true
+    },
+    {
+      "id": "ev_02_repudiation_notice",
+      "case_id": "case_03",
+      "source_type": "LETTER",
+      "source_ref": "Repudiation Letter",
+      "quote": "We regret to inform you that your claim for Cataract Surgery is repudiated under Clause 4.2 (Specific Illness Waiting Period) as the surgery occurred within the 24-month specific waiting period from the date of policy inception.",
+      "page": 1,
+      "verified": true
+    }
+  ],
+  "money": {
+    "claim_amount_inr": 85000.0,
+    "settled_amount_inr": 0.0,
+    "disallowed_amount_inr": 85000.0
+  },
+  "deadlines": [
+    {
+      "case_id": "case_03",
+      "kind": "GRIEVANCE_REPLY_WINDOW",
+      "due_date": "2024-10-12",
+      "status": "PASSED"
+    },
+    {
+      "case_id": "case_03",
+      "kind": "OMBUDSMAN_LIMIT",
+      "due_date": "2025-09-12",
+      "status": "UPCOMING"
+    }
+  ],
+  "letter_available": true,
+  "warnings": []
+}

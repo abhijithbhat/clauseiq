@@ -1,0 +1,177 @@
+{
+  "case_id": "case_02",
+  "verdict": {
+    "case_id": "case_02",
+    "label": "LIKELY_WRONGFUL",
+    "summary": "Your claim of \u20b92,45,000 was wrongly rejected by Star Health and Allied Insurance Co. Ltd. under Clause 7.2 for non-disclosure. Your policy has completed 64 months of continuous coverage, which surpasses the statutory 60-month moratorium period under Section 45 of the Insurance Act. The insurer cannot repudiate this claim without establishing fraud.",
+    "confidence": 0.95,
+    "needs_human_review": false,
+    "reasons": [
+      "ev_01_moratorium_clause",
+      "ev_02_repudiation_notice"
+    ]
+  },
+  "facts": {
+    "insurer_name": "Star Health and Allied Insurance Co. Ltd.",
+    "policy_number": "P/110022/01/2024/004567",
+    "policy_type": "INDIVIDUAL",
+    "insured_name": "Sunita Sharma",
+    "claim_number": "CIR/2024/110022/0987654",
+    "claim_type": "REIMBURSEMENT",
+    "claim_amount_inr": 245000.0,
+    "settled_amount_inr": 0.0,
+    "disallowed_amount_inr": 245000.0,
+    "rejection_date": "2024-08-10",
+    "rejection_category": "NON_DISCLOSURE",
+    "rejection_reason_text": "Your claim is repudiated under Clause 7.2 (Disclosure to Information Norm) on grounds of non-disclosure of pre-existing hypertension at the time of proposal.",
+    "cited_clause_ref": "Clause 7.2",
+    "cited_clause_text": "Disclosure to Information Norm (Code- Cond02): The policy shall be void and all premium paid hereon shall be forfeited to the Company in the event of misrepresentation, mis-description or non-disclosure of any material fact.",
+    "policy_first_inception_date": "2019-02-15",
+    "current_period_start": "2024-02-15",
+    "current_period_end": "2025-02-14",
+    "admission_date": "2024-06-20",
+    "discharge_date": "2024-06-25",
+    "diagnosis_text": "Acute Coronary Syndrome - Unstable Angina",
+    "treatment_text": "Coronary Angiography and PTCA Stenting",
+    "hospital_name": "Apollo Hospitals, Chennai",
+    "ped_alleged": true,
+    "fraud_alleged": false,
+    "room_rent_limit_per_day_inr": 5000.0,
+    "room_rent_actual_per_day_inr": 4800.0,
+    "ped_waiting_period_months": 36,
+    "diagnosis_date": "2024-06-18",
+    "prior_symptoms_or_consultation_evidence": true,
+    "continuous_coverage_months": 64,
+    "portability_continuity_months": 0,
+    "sum_insured_inr": 500000.0,
+    "base_sum_insured_inr": 500000.0,
+    "sum_insured_enhanced_recently": false,
+    "sum_insured_enhancement_date": null,
+    "sum_insured_enhancement_amount_inr": null,
+    "fraud_established": false,
+    "initial_waiting_period_days": 30,
+    "specific_illness_waiting_months": 24,
+    "named_ailment_matched": null,
+    "is_accident_case": false,
+    "has_room_rent_proportionate_clause": false,
+    "associated_medical_charges_inr": 180000.0,
+    "non_associated_charges_inr": 65000.0,
+    "room_rent_deduction_inr": 0.0,
+    "claim_intimation_date": "2024-06-21",
+    "policy_intimation_window_days": 30,
+    "documents_requested_list": [],
+    "grievance_sent_date": "2024-08-18",
+    "grievance_received_date": "2024-08-20",
+    "grievance_reply_received_date": null,
+    "grievance_reply_status": "UNKNOWN",
+    "grievance_satisfactory": null,
+    "disallowed_items": [
+      {
+        "name": "Hospitalisation and Angioplasty Surgery",
+        "amount_inr": 245000.0
+      }
+    ],
+    "fields_confidence": {
+      "insurer_name": 1.0,
+      "policy_number": 1.0,
+      "policy_type": 1.0,
+      "claim_amount_inr": 1.0,
+      "rejection_category": 1.0,
+      "policy_first_inception_date": 0.98,
+      "admission_date": 0.98
+    },
+    "source_spans": {
+      "insurer_name": {
+        "document": "REJECTION_LETTER",
+        "page": 1,
+        "quote": "Star Health and Allied Insurance Co. Ltd."
+      },
+      "policy_number": {
+        "document": "POLICY",
+        "page": 1,
+        "quote": "Policy Number: P/110022/01/2024/004567"
+      },
+      "policy_first_inception_date": {
+        "document": "POLICY",
+        "page": 1,
+        "quote": "First Inception Date: 15/02/2019"
+      },
+      "admission_date": {
+        "document": "REJECTION_LETTER",
+        "page": 1,
+        "quote": "Date of Admission: 20/06/2024"
+      },
+      "discharge_date": {
+        "document": "REJECTION_LETTER",
+        "page": 1,
+        "quote": "Date of Discharge: 25/06/2024"
+      },
+      "rejection_reason_text": {
+        "document": "REJECTION_LETTER",
+        "page": 1,
+        "quote": "Your claim is repudiated under Clause 7.2 (Disclosure to Information Norm) on grounds of non-disclosure of pre-existing hypertension at the time of proposal."
+      }
+    }
+  },
+  "rules": [
+    {
+      "case_id": "case_02",
+      "rule_id": "R2",
+      "name": "Section 45 Moratorium Period",
+      "outcome": "CONTRADICTS_INSURER",
+      "inputs": {
+        "continuous_coverage_months": 64,
+        "fraud_established": false,
+        "moratorium_threshold_months": 60,
+        "base_sum_insured_inr": 500000.0
+      },
+      "explanation": "The policy has completed 64 months of continuous coverage without break, which exceeds the statutory 60-month moratorium ceiling under Section 45 of the Insurance Act, 1938 and IRDAI Master Circular 2024. No claim can be repudiated on grounds of misstatement or non-disclosure after expiry of 60 months unless fraud is established.",
+      "law_ref": "Insurance Act 1938 Section 45 & IRDAI Master Circular 2024 Para 12",
+      "supporting_evidence_ids": [
+        "ev_01_moratorium_clause",
+        "ev_02_repudiation_notice"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "ev_01_moratorium_clause",
+      "case_id": "case_02",
+      "source_type": "POLICY",
+      "source_ref": "Clause 7.2",
+      "quote": "Disclosure to Information Norm (Code- Cond02): The policy shall be void and all premium paid hereon shall be forfeited to the Company in the event of misrepresentation, mis-description or non-disclosure of any material fact.",
+      "page": 5,
+      "verified": true
+    },
+    {
+      "id": "ev_02_repudiation_notice",
+      "case_id": "case_02",
+      "source_type": "LETTER",
+      "source_ref": "Repudiation Letter",
+      "quote": "Your claim is repudiated under Clause 7.2 (Disclosure to Information Norm) on grounds of non-disclosure of pre-existing hypertension at the time of proposal.",
+      "page": 1,
+      "verified": true
+    }
+  ],
+  "money": {
+    "claim_amount_inr": 245000.0,
+    "settled_amount_inr": 0.0,
+    "disallowed_amount_inr": 245000.0
+  },
+  "deadlines": [
+    {
+      "case_id": "case_02",
+      "kind": "GRIEVANCE_REPLY_WINDOW",
+      "due_date": "2024-09-09",
+      "status": "PASSED"
+    },
+    {
+      "case_id": "case_02",
+      "kind": "OMBUDSMAN_LIMIT",
+      "due_date": "2025-08-10",
+      "status": "UPCOMING"
+    }
+  ],
+  "letter_available": true,
+  "warnings": []
+}

@@ -70,6 +70,14 @@ class EvidenceSourceType(str, Enum):
     LETTER = "LETTER"
 
 
+class GrievanceReplyStatus(str, Enum):
+    """Status of insurer's reply to policyholder's grievance representation."""
+    REPLY_RECEIVED = "REPLY_RECEIVED"
+    AWAITING_REPLY = "AWAITING_REPLY"
+    CONFIRMED_NO_RESPONSE = "CONFIRMED_NO_RESPONSE"
+    UNKNOWN = "UNKNOWN"
+
+
 # ==============================================================================
 # Supporting Sub-Models
 # ==============================================================================
@@ -192,6 +200,7 @@ class ExtractedFacts(BaseModel):
     grievance_sent_date: Optional[str] = None  # ISO YYYY-MM-DD
     grievance_received_date: Optional[str] = None  # ISO YYYY-MM-DD
     grievance_reply_received_date: Optional[str] = None  # ISO YYYY-MM-DD
+    grievance_reply_status: GrievanceReplyStatus = GrievanceReplyStatus.UNKNOWN
     grievance_satisfactory: Optional[bool] = None
 
     disallowed_items: List[DisallowedItem] = Field(default_factory=list)
@@ -256,6 +265,7 @@ class RuleResult(BaseModel):
     inputs: Dict[str, Any]
     explanation: str
     law_ref: Optional[str] = None
+    supporting_evidence_ids: List[str] = Field(default_factory=list)
 
 
 class Verdict(BaseModel):
