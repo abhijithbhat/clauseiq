@@ -17,6 +17,7 @@ from backend.app.models.db import (
     init_db,
 )
 from backend.app.models.schemas import (
+    Deadline,
     DocumentKind,
     Evidence,
     EvidenceSourceType,
@@ -25,6 +26,7 @@ from backend.app.models.schemas import (
     RejectionCategory,
     RuleOutcome,
     RuleResult,
+    Verdict,
     VerdictLabel,
 )
 from backend.app.verdict.explainer import (
@@ -408,18 +410,49 @@ def test_analyze_pipeline_end_to_end() -> None:
         ped_waiting_period_months=36,
     )
 
-    with patch("backend.app.api.cases.extract_case_facts", return_value=mock_facts):
+    mock_verdict = Verdict(
+        case_id=case_id,
+        label=VerdictLabel.LIKELY_WRONGFUL,
+        summary="",
+        confidence=0.95,
+        needs_human_review=False,
+        reasons=["ev_01_ped_clause"],
+    )
+    mock_deadline = Deadline(
+        case_id=case_id,
+        kind="OMBUDSMAN_LIMIT",
+        due_date="2025-06-15",
+        status="UPCOMING",
+    )
+
+    with (
+        patch("backend.app.api.cases.extract_case_facts", return_value=mock_facts),
+        patch("backend.app.api.cases.decide_verdict", return_value=mock_verdict) as mock_decide,
+        patch("backend.app.api.cases.evaluate_deadlines", return_value=[mock_deadline], create=True),
+    ):
         res = client.post(f"/cases/{case_id}/analyze")
 
     assert res.status_code == 200
+    mock_decide.assert_called_once()
+    assert mock_decide.call_args.kwargs["case_id"] == case_id
+    assert mock_decide.call_args.kwargs["facts"] == mock_facts
+    assert "rules" in mock_decide.call_args.kwargs
+    assert "evidence" in mock_decide.call_args.kwargs
+
     analysis = res.json()
     assert analysis["case_id"] == case_id
     assert analysis["verdict"]["label"] == "LIKELY_WRONGFUL"
+    assert analysis["verdict"]["confidence"] == 0.95
+    assert analysis["verdict"]["needs_human_review"] is False
+    assert analysis["verdict"]["reasons"] == ["ev_01_ped_clause"]
     assert "₹1,20,000" in analysis["verdict"]["summary"]
     assert len(analysis["rules"]) >= 1
     assert analysis["rules"][0]["rule_id"] == "R1"
     assert analysis["rules"][0]["outcome"] == "CONTRADICTS_INSURER"
     assert analysis["money"]["claim_amount_inr"] == 120000.0
+    assert len(analysis["deadlines"]) == 1
+    assert analysis["deadlines"][0]["kind"] == "OMBUDSMAN_LIMIT"
+    assert analysis["deadlines"][0]["due_date"] == "2025-06-15"
 
     # Verify progress indicates completed
     prog_res = client.get(f"/cases/{case_id}/progress")

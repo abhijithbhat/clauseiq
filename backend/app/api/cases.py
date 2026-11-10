@@ -58,6 +58,25 @@ from backend.app.retrieve.hybrid import HybridRetriever, chunks_to_evidence
 from backend.app.retrieve.synonyms import expand_query
 from backend.app.verdict.explainer import generate_verdict_explanation
 
+try:
+    from backend.app.verdict.decider import decide_verdict  # type: ignore
+except ImportError:
+    decide_verdict = None
+
+try:
+    from backend.app.rules.engine import evaluate_rules  # type: ignore
+except ImportError:
+    evaluate_rules = None
+
+try:
+    from backend.app.rules.r9_deadlines import (  # type: ignore
+        evaluate_deadlines,
+        evaluate_r9_deadlines,
+    )
+except ImportError:
+    evaluate_deadlines = None
+    evaluate_r9_deadlines = None
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/cases", tags=["cases"])
@@ -400,12 +419,25 @@ def analyze_case(case_id: str) -> AnalysisResult:
     # Stage 4: Checking rules
     _set_step(case_id, "Checking rules", "running")
     rule_results: List[RuleResult] = []
-    try:
-        # Check if teammate's rules engine is available
-        from backend.app.rules.engine import evaluate_rules  # type: ignore
-        rule_results = evaluate_rules(facts=facts, chunks=policy_chunks)
-    except (ImportError, AttributeError):
+    deadlines: List[Deadline] = []
+    if evaluate_rules is not None:
+        rules_out = evaluate_rules(facts=facts, chunks=policy_chunks)
+        if isinstance(rules_out, tuple) and len(rules_out) == 2 and isinstance(rules_out[1], list):
+            rule_results, deadlines = rules_out
+        else:
+            rule_results = rules_out
+    else:
         rule_results = _evaluate_rules_fallback(facts)
+
+    if not deadlines:
+        deadlines_eval_fn = evaluate_deadlines or evaluate_r9_deadlines
+        if deadlines_eval_fn is not None:
+            try:
+                deadlines = deadlines_eval_fn(case_id=case_id, facts=facts)
+            except Exception as e:
+                logger.warning("R9 deadline evaluation encountered error: %s", e)
+                deadlines = []
+
     _set_step(case_id, "Checking rules", "done")
 
     # Stage 5: Verifying evidence
@@ -426,62 +458,36 @@ def analyze_case(case_id: str) -> AnalysisResult:
 
     # Stage 6: Writing explanation
     _set_step(case_id, "Writing explanation", "running")
-    # Determine 4-way verdict label
-    verdict_label: VerdictLabel
-    try:
-        from backend.app.verdict.decider import decide_verdict  # type: ignore
-        verdict_label = decide_verdict(rule_results=rule_results, facts=facts)
-    except (ImportError, AttributeError):
-        contradictions = [r for r in rule_results if r.outcome == RuleOutcome.CONTRADICTS_INSURER]
-        supports = [r for r in rule_results if r.outcome == RuleOutcome.SUPPORTS_INSURER]
-        if contradictions:
-            verdict_label = VerdictLabel.LIKELY_WRONGFUL
-        elif supports:
-            verdict_label = VerdictLabel.LIKELY_VALID
-        elif not rule_results:
-            verdict_label = VerdictLabel.INSUFFICIENT_INFO
-        else:
-            verdict_label = VerdictLabel.CONTESTABLE
+    if decide_verdict is None:
+        raise ClauseIQException(
+            code="DECIDER_UNAVAILABLE",
+            message="Verdict decider module is not available in this environment.",
+            hint="Please ensure backend.app.verdict.decider is present.",
+        )
+
+    decision: Verdict = decide_verdict(
+        case_id=case_id,
+        facts=facts,
+        rules=rule_results,
+        evidence=verified_evidence,
+    )
 
     summary_explanation = generate_verdict_explanation(
         case_id=case_id,
-        verdict_label=verdict_label,
+        verdict_label=decision.label,
         facts=facts,
         rule_results=rule_results,
         verified_evidence=verified_evidence,
     )
 
-    verdict = Verdict(
-        case_id=case_id,
-        label=verdict_label,
-        summary=summary_explanation,
-        confidence=0.95 if verdict_label == VerdictLabel.LIKELY_WRONGFUL else 0.85,
-        needs_human_review=False,
-        reasons=[ev.id for ev in verified_evidence if ev.verified],
-    )
+    verdict = decision.model_copy(update={"summary": summary_explanation})
 
-    # Build financial and statutory deadline summary
+    # Build financial summary
     money = MoneySummary(
         claim_amount_inr=facts.claim_amount_inr,
         settled_amount_inr=facts.settled_amount_inr,
         disallowed_amount_inr=facts.disallowed_amount_inr,
     )
-
-    deadlines: List[Deadline] = []
-    if facts.rejection_date:
-        try:
-            rej_dt = datetime.fromisoformat(facts.rejection_date)
-            ombudsman_due = (rej_dt + timedelta(days=365)).strftime("%Y-%m-%d")
-            deadlines.append(
-                Deadline(
-                    case_id=case_id,
-                    kind="OMBUDSMAN_LIMIT",
-                    due_date=ombudsman_due,
-                    status="UPCOMING",
-                )
-            )
-        except Exception:
-            pass
 
     analysis_result = AnalysisResult(
         case_id=case_id,
