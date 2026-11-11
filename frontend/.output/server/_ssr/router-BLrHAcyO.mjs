@@ -1,16 +1,17 @@
 import { i as __toESM } from "../_runtime.mjs";
-import { f as require_react, p as require_jsx_runtime } from "../_libs/@radix-ui/react-checkbox+[...].mjs";
-import { a as ShieldCheck, c as Scale, h as Info } from "../_libs/lucide-react.mjs";
+import { p as require_jsx_runtime } from "../_libs/@radix-ui/react-checkbox+[...].mjs";
+import { u as require_react } from "../_libs/@floating-ui/react-dom+[...].mjs";
+import { a as ShieldCheck, c as Scale, g as Info } from "../_libs/lucide-react.mjs";
 import { n as cn } from "./utils-WbrsqoLR.mjs";
 import { _ as createFileRoute, b as useRouter, d as Scripts, f as HeadContent, g as lazyRouteComponent, h as Outlet, m as createRouter, v as createRootRouteWithContext, y as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { t as QueryClient } from "../_libs/tanstack__query-core.mjs";
 import { n as QueryClientProvider } from "../_libs/tanstack__react-query.mjs";
-import { c as useBackendStatus } from "./use-backend-status-D_-Ii0gR.mjs";
+import { f as useBackendStatus } from "./use-backend-status-BvJR9wA6.mjs";
 import { t as Toaster } from "../_libs/sonner.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/router-1OfWU6Mr.js
+//#region node_modules/.nitro/vite/services/ssr/assets/router-BLrHAcyO.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
-var styles_default = "/assets/styles-CQOxjZtg.css";
+var styles_default = "/assets/styles-U3mvlGOB.css";
 function reportLovableError(error, context = {}) {
 	if (typeof window === "undefined") return;
 	window.__lovableEvents?.captureException?.(error, {
@@ -330,7 +331,7 @@ function RootComponent() {
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SiteShell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Outlet, {}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Toaster$1, { position: "bottom-right" })]
 	});
 }
-var $$splitComponentImporter$2 = () => import("./routes-DOEFSz8w.mjs");
+var $$splitComponentImporter$2 = () => import("./routes-Bj5zXr1F.mjs");
 var Route$2 = createFileRoute("/")({
 	head: () => ({ meta: [
 		{ title: "ClauseIQ — Challenge Unfair Health Insurance Claim Rejections" },

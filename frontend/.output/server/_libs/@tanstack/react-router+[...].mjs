@@ -1,5 +1,6 @@
 import { i as __toESM, n as __esmMin, t as __commonJSMin } from "../../_runtime.mjs";
-import { c as require_react_dom, f as require_react, p as require_jsx_runtime } from "../@radix-ui/react-checkbox+[...].mjs";
+import { p as require_jsx_runtime } from "../@radix-ui/react-checkbox+[...].mjs";
+import { l as require_react_dom, u as require_react } from "../@floating-ui/react-dom+[...].mjs";
 import { i as parseHref, r as normalizeProtocolRelative } from "../tanstack__history.mjs";
 import { Buffer } from "node:buffer";
 import { PassThrough, Readable } from "node:stream";

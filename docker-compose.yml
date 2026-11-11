@@ -1,0 +1,48 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - LLM_PROVIDER=${LLM_PROVIDER:-gemini}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - LLM_MODEL_EXTRACT=${LLM_MODEL_EXTRACT:-gemini-2.5-flash}
+      - LLM_MODEL_WRITE=${LLM_MODEL_WRITE:-gemini-2.5-flash}
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///./clauseiq.db}
+      - MAX_UPLOAD_MB=${MAX_UPLOAD_MB:-10}
+      - DELETE_UPLOADS=${DELETE_UPLOADS:-true}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:8080,http://127.0.0.1:8080,http://localhost:5173}
+      - DEMO_MODE=${DEMO_MODE:-false}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  frontend:
+    image: node:22-slim
+    working_dir: /app/frontend
+    ports:
+      - "8080:8080"
+    environment:
+      - VITE_API_BASE_URL=${VITE_API_BASE_URL:-http://localhost:8000}
+    volumes:
+      - ./frontend:/app/frontend
+      - frontend_node_modules:/app/frontend/node_modules
+    command: sh -c "npm install --no-audit --no-fund && npm run dev -- --host 0.0.0.0 --port 8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  frontend_node_modules:
+

@@ -35,3 +35,5 @@ use the editor.
 - Verdict and rule-outcome colours come only from `VERDICT_META` / `OUTCOME_META` mapped to semantic tokens in `src/styles.css`.
 - Motion and interaction live in `src/styles.css` as shared utilities (`lift`, `press`, `animate-rise/pop/fill`) on one easing curve; entrance animations keep `animation-fill-mode: backwards` so a finished entrance never pins `:hover`/`:active` transforms, and the `prefers-reduced-motion` guard stays in place.
 - Intake actions reuse the existing upload area and demo pipeline; verdict accent classes remain in `VERDICT_META` to keep presentation changes separate from claim analysis.
+- Workspace corrections and letter placeholders live in browser-safe `workspace.ts`; offline edits invalidate legal findings and request human review rather than synthesizing verified conclusions.
+- The workspace timeline distinguishes the 14-day grievance TAT from the 30-day no-response wait, uses recorded receipt dates, and labels repudiation-based filing dates as indicative because grievance triggers can differ.

@@ -1,5 +1,5 @@
 import { p as require_jsx_runtime } from "../_libs/@radix-ui/react-checkbox+[...].mjs";
-import { _ as FileX, a as ShieldCheck, c as Scale, x as EyeOff } from "../_libs/lucide-react.mjs";
+import { S as EyeOff, a as ShieldCheck, c as Scale, v as FileX } from "../_libs/lucide-react.mjs";
 //#region node_modules/.nitro/vite/services/ssr/assets/about-CpPmuWwf.js
 var import_jsx_runtime = require_jsx_runtime();
 var PRINCIPLES = [

@@ -1,5 +1,6 @@
 import { i as __toESM } from "../_runtime.mjs";
-import { f as require_react, p as require_jsx_runtime } from "./@radix-ui/react-checkbox+[...].mjs";
+import { p as require_jsx_runtime } from "./@radix-ui/react-checkbox+[...].mjs";
+import { u as require_react } from "./@floating-ui/react-dom+[...].mjs";
 import { a as noop, i as environmentManager, n as QueryObserver, o as shouldThrowError, r as notifyManager } from "./tanstack__query-core.mjs";
 //#region node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js
 var import_react = /* @__PURE__ */ __toESM(require_react(), 1);

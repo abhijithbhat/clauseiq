@@ -4,21 +4,27 @@ import {
   ArrowLeft,
   BadgeCheck,
   CalendarClock,
-  Copy,
-  FileDown,
   FileText,
   Gavel,
   Landmark,
   ListChecks,
   Quote,
+  RefreshCw,
   ShieldAlert,
   Trash2,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { deleteCase } from "@/lib/clauseiq/api";
-import { computeDeadlines, GRIEVANCE_TAT_DAYS } from "@/lib/clauseiq/deadlines";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ApiError, checkHealth, deleteCase, patchCaseFacts } from "@/lib/clauseiq/api";
+import { computeDeadlines } from "@/lib/clauseiq/deadlines";
 import {
   daysBetween,
   formatDate,
@@ -27,15 +33,13 @@ import {
   isValidISODate,
   todayISO,
 } from "@/lib/clauseiq/format";
-import {
-  buildAppealLetter,
-  downloadLetterDocx,
-  downloadLetterPdf,
-  letterToPlainText,
-} from "@/lib/clauseiq/letter";
-import type { AnalysisResult, EvidenceSource } from "@/lib/clauseiq/types";
+import type { AnalysisResult, EditableFacts, EvidenceSource } from "@/lib/clauseiq/types";
 import { confidenceLabel, OUTCOME_META, VERDICT_META } from "@/lib/clauseiq/verdict";
+import { recalculateDemo } from "@/lib/clauseiq/workspace";
 import { cn } from "@/lib/utils";
+import { DeadlinesTimeline } from "./DeadlinesTimeline";
+import { FactsEditorModal } from "./FactsEditorModal";
+import { LetterPreviewModal } from "./LetterPreviewModal";
 
 interface Props {
   result: AnalysisResult;
@@ -57,18 +61,29 @@ function Field({ k, v, mono }: { k: string; v: string; mono?: boolean }) {
   return (
     <div className="min-w-0">
       <dt className="eyebrow">{k}</dt>
-      <dd className={cn("mt-1 truncate text-[13.5px] text-foreground", mono && "font-mono tabular")}>{v}</dd>
+      <dd className={cn("mt-1 truncate text-[13.5px] text-foreground", mono && "font-mono tabular")}>
+        {v}
+      </dd>
     </div>
   );
 }
 
 function RulesTab({ r }: { r: AnalysisResult }) {
-  const counts = r.rules.reduce<Record<string, number>>((a, x) => ((a[x.outcome] = (a[x.outcome] ?? 0) + 1), a), {});
+  const counts = r.rules.reduce<Record<string, number>>(
+    (a, x) => ((a[x.outcome] = (a[x.outcome] ?? 0) + 1), a),
+    {},
+  );
   return (
     <div>
       <div className="flex flex-wrap gap-2 border-b border-border px-5 py-3">
         {(Object.keys(OUTCOME_META) as (keyof typeof OUTCOME_META)[]).map((k) => (
-          <span key={k} className={cn("rounded border px-2 py-0.5 font-mono text-[10.5px] tabular", OUTCOME_META[k].className)}>
+          <span
+            key={k}
+            className={cn(
+              "rounded border px-2 py-0.5 font-mono text-[10.5px] tabular",
+              OUTCOME_META[k].className,
+            )}
+          >
             {OUTCOME_META[k].label} · {counts[k] ?? 0}
           </span>
         ))}
@@ -92,24 +107,50 @@ function RulesTab({ r }: { r: AnalysisResult }) {
                 </td>
               </tr>
             ) : (
-              r.rules.map((x) => (
-                <tr key={x.id} className="border-b border-border align-top transition-colors duration-150 ease-out last:border-0 hover:bg-background">
-                  <td className="px-5 py-3 font-mono text-[12px] text-muted-foreground">{x.id}</td>
-                  <td className="px-3 py-3 font-medium text-foreground">{x.name}</td>
-                  <td className="px-3 py-3">
-                    <span
-                      className={cn(
-                        "inline-block whitespace-nowrap rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider",
-                        OUTCOME_META[x.outcome].className,
+              r.rules.map((x) => {
+                const inputEntries = x.inputs ? Object.entries(x.inputs) : [];
+                return (
+                  <tr
+                    key={x.id}
+                    className="border-b border-border align-top transition-colors duration-150 ease-out last:border-0 hover:bg-background"
+                  >
+                    <td className="px-5 py-3 font-mono text-[12px] text-muted-foreground">{x.id}</td>
+                    <td className="px-3 py-3 font-medium text-foreground">{x.name}</td>
+                    <td className="px-3 py-3">
+                      <span
+                        className={cn(
+                          "inline-block whitespace-nowrap rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider",
+                          OUTCOME_META[x.outcome].className,
+                        )}
+                      >
+                        {OUTCOME_META[x.outcome].label}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3 text-muted-foreground">{x.citation}</td>
+                    <td className="px-5 py-3 text-muted-foreground">
+                      <p>{x.finding}</p>
+                      {inputEntries.length > 0 && (
+                        <dl className="mt-2 space-y-1 text-xs">
+                          {inputEntries.map(([key, value]) => (
+                            <div key={key} className="flex flex-wrap gap-x-2">
+                              <dt className="font-medium text-foreground/80">
+                                {key.replace(/_/g, " ")}
+                              </dt>
+                              <dd className="break-all font-mono">
+                                {value == null
+                                  ? "Not provided"
+                                  : typeof value === "object"
+                                    ? JSON.stringify(value)
+                                    : String(value)}
+                              </dd>
+                            </div>
+                          ))}
+                        </dl>
                       )}
-                    >
-                      {OUTCOME_META[x.outcome].label}
-                    </span>
-                  </td>
-                  <td className="px-3 py-3 text-muted-foreground">{x.citation}</td>
-                  <td className="px-5 py-3 text-muted-foreground">{x.finding}</td>
-                </tr>
-              ))
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
@@ -142,7 +183,9 @@ function EvidenceTab({ r }: { r: AnalysisResult }) {
             <header className="flex items-start justify-between gap-3 border-b border-border px-4 py-3">
               <div className="min-w-0">
                 <p className="eyebrow">{SOURCE_LABEL[e.source] ?? "Supporting document"}</p>
-                <p className="mt-1 truncate text-[13px] font-medium text-foreground">{e.document_title}</p>
+                <p className="mt-1 truncate text-[13px] font-medium text-foreground">
+                  {e.document_title}
+                </p>
                 <p className="text-[12px] text-muted-foreground">
                   {e.section} · Page {e.page}
                 </p>
@@ -178,51 +221,32 @@ function EvidenceTab({ r }: { r: AnalysisResult }) {
 }
 
 function DeadlinesTab({ r }: { r: AnalysisResult }) {
-  if (!isValidISODate(r.repudiation_date)) {
-    return (
-      <div className="space-y-4 p-5">
-        <div className="rounded-md border border-border bg-background p-5 text-[13px] text-muted-foreground">
-          The rejection / repudiation date was not extracted from your documents, so statutory
-          30-day grievance and 1-year Insurance Ombudsman timeline dates could not be computed.
-        </div>
-        {r.backend_deadlines && r.backend_deadlines.length > 0 && (
-          <div className="grid gap-3 md:grid-cols-2">
-            {r.backend_deadlines.map((dl) => (
-              <div key={`${dl.kind}-${dl.due_date}`} className="rounded-md border border-border p-4">
-                <p className="eyebrow">{dl.kind.replace(/_/g, " ")}</p>
-                <p className="mt-1 font-mono text-[14px] text-foreground">
-                  {formatOptionalDate(dl.due_date, dl.due_date)}
-                </p>
-                <p className="mt-1 font-mono text-[11px] text-muted-foreground">{dl.status}</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
-  const d = computeDeadlines(r.repudiation_date);
+  const hasRepDate = isValidISODate(r.repudiation_date);
+  const d = hasRepDate ? computeDeadlines(r.repudiation_date as string) : null;
   const today = todayISO();
-  const span = Math.max(1, daysBetween(d.repudiation, d.ombudsmanLastDate));
-  const elapsed = Math.min(Math.max(daysBetween(d.repudiation, today), 0), span);
-  const grievanceLeft = daysBetween(today, d.grievanceResponseDue);
-  const ombLeft = daysBetween(today, d.ombudsmanLastDate);
-  const pos = (iso: string) => `${(daysBetween(d.repudiation, iso) / span) * 100}%`;
+  const ombLeft = d ? daysBetween(today, d.ombudsmanLastDate) : null;
 
   const cards = [
     {
       icon: ShieldAlert,
       title: "Insurer grievance",
-      value: `${GRIEVANCE_TAT_DAYS} days`,
-      body: `File with the Grievance Redressal Officer now. The insurer must resolve within ${GRIEVANCE_TAT_DAYS} days; if filed today, a response is due by ${formatDate(addTodayDays(GRIEVANCE_TAT_DAYS))}.`,
-      status: grievanceLeft >= 0 ? `${grievanceLeft} days left in first window` : "File immediately",
+      value: "14 days",
+      body: "The IRDAI grievance resolution target is 14 days from receipt. The Rule 14 no-response Ombudsman wait window is a separate 30-day period.",
+      status: r.grievance_received_date ? "See timeline for dates" : "Record grievance receipt date",
     },
     {
       icon: Landmark,
       title: "Insurance Ombudsman",
       value: "1 year",
-      body: `If unresolved or rejected, complain to the Ombudsman within one year of repudiation — last date ${formatDate(d.ombudsmanLastDate)}. Claims up to ₹50 lakh; free of cost.`,
-      status: ombLeft >= 0 ? `${ombLeft} days remaining` : "Window closed",
+      body: d
+        ? `If unresolved or rejected, review Ombudsman eligibility. Indicative one-year date from repudiation: ${formatDate(d.ombudsmanLastDate)}; the applicable grievance trigger may change this. Claims up to ₹50 lakh; free of cost.`
+        : "If unresolved or rejected, complaints must generally be filed within 1 year of rejection or final grievance reply. Claims up to ₹50 lakh; free of cost.",
+      status:
+        ombLeft == null
+          ? "Repudiation date needed"
+          : ombLeft >= 0
+            ? `${ombLeft} days remaining`
+            : "Window closed",
     },
     {
       icon: Gavel,
@@ -235,47 +259,23 @@ function DeadlinesTab({ r }: { r: AnalysisResult }) {
 
   return (
     <div className="p-5">
-      <div className="rounded-md border border-border bg-background p-5">
-        <div className="flex items-center justify-between text-[12px]">
-          <span className="font-medium text-foreground">Appeal window</span>
-          <span className="font-mono text-muted-foreground tabular">
-            Day {elapsed} of {span}
-          </span>
-        </div>
-        <div className="relative mt-14 h-1.5 rounded-full bg-secondary">
-          <div className="absolute inset-y-0 left-0 rounded-full bg-primary transition-[width] duration-700 ease-out" style={{ width: `${(elapsed / span) * 100}%` }} />
-          {[
-            { iso: d.repudiation, label: "Repudiated", date: formatDate(d.repudiation), align: "left" },
-            { iso: d.grievanceResponseDue, label: "30-day TAT", date: formatDate(d.grievanceResponseDue), align: "center" },
-            { iso: d.ombudsmanLastDate, label: "Ombudsman limit", date: formatDate(d.ombudsmanLastDate), align: "right" },
-          ].map((m) => (
-            <div
-              key={m.label}
-              className={cn(
-                "absolute top-1/2 flex flex-col",
-                m.align === "left" && "items-start",
-                m.align === "center" && "-translate-x-1/2 items-center",
-                m.align === "right" && "-translate-x-full items-end",
-              )}
-              style={{ left: pos(m.iso) }}
-            >
-              <span className="-mt-[5px] size-2.5 rounded-full border-2 border-card bg-foreground" />
-              <span
-                className={cn(
-                  "flex flex-col whitespace-nowrap",
-                  m.align === "center" ? "absolute bottom-full mb-3 items-center" : "mt-2",
-                  m.align === "right" && "items-end",
-                )}
-              >
-                <span className="text-[11px] font-medium text-foreground">{m.label}</span>
-                <span className="font-mono text-[10.5px] text-muted-foreground">{m.date}</span>
-              </span>
+      <DeadlinesTimeline result={r} />
+
+      {!hasRepDate && r.backend_deadlines && r.backend_deadlines.length > 0 && (
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
+          {r.backend_deadlines.map((dl) => (
+            <div key={`${dl.kind}-${dl.due_date}`} className="rounded-md border border-border p-4">
+              <p className="eyebrow">{dl.kind.replace(/_/g, " ")}</p>
+              <p className="mt-1 font-mono text-[14px] text-foreground">
+                {formatOptionalDate(dl.due_date, dl.due_date)}
+              </p>
+              <p className="mt-1 font-mono text-[11px] text-muted-foreground">{dl.status}</p>
             </div>
           ))}
         </div>
-        <div className="h-12" />
-      </div>
-      <div className="mt-4 grid gap-4 md:grid-cols-3">
+      )}
+
+      <div className="mt-6 grid gap-4 md:grid-cols-3">
         {cards.map(({ icon: Icon, ...c }) => (
           <div key={c.title} className="lift rounded-md border border-border p-4">
             <div className="flex items-center justify-between">
@@ -284,7 +284,9 @@ function DeadlinesTab({ r }: { r: AnalysisResult }) {
             </div>
             <p className="mt-3 text-[13.5px] font-medium text-foreground">{c.title}</p>
             <p className="mt-1 text-[12.5px] leading-relaxed text-muted-foreground">{c.body}</p>
-            <p className="mt-3 border-t border-border pt-2.5 font-mono text-[11px] text-foreground">{c.status}</p>
+            <p className="mt-3 border-t border-border pt-2.5 font-mono text-[11px] text-foreground">
+              {c.status}
+            </p>
           </div>
         ))}
       </div>
@@ -292,95 +294,53 @@ function DeadlinesTab({ r }: { r: AnalysisResult }) {
   );
 }
 
-function addTodayDays(n: number) {
-  const t = new Date();
-  t.setUTCDate(t.getUTCDate() + n);
-  return t.toISOString().slice(0, 10);
-}
-
-function LetterTab({ r }: { r: AnalysisResult }) {
-  const blocks = useMemo(() => buildAppealLetter(r), [r]);
-  const [busy, setBusy] = useState<"pdf" | "docx" | null>(null);
-  const claimSlug = (
-    r.claim_number && r.claim_number !== "Not stated" ? r.claim_number : r.case_id
-  ).replace(/[^A-Za-z0-9]+/g, "-");
-  const base = `ClauseIQ_Appeal_${claimSlug}`;
-  const insurerLabel = r.insurer && r.insurer !== "Not stated" ? r.insurer : "the insurer";
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(letterToPlainText(blocks));
-      toast.success("Letter copied to clipboard");
-    } catch {
-      toast.error("Could not access the clipboard");
-    }
-  };
-  const dl = async (kind: "pdf" | "docx") => {
-    setBusy(kind);
-    try {
-      if (kind === "pdf") await downloadLetterPdf(blocks, `${base}.pdf`);
-      else await downloadLetterDocx(blocks, `${base}.docx`);
-    } catch {
-      toast.error("Download failed — please try again");
-    } finally {
-      setBusy(null);
-    }
-  };
-
-  return (
-    <div className="p-5">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <p className="max-w-lg text-[12.5px] text-muted-foreground">
-          Addressed to the Grievance Redressal Officer of {insurerLabel}. Review every statement and
-          attach supporting documents before sending.
-        </p>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" onClick={copy}>
-            <Copy /> Copy Letter
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => dl("docx")} disabled={busy !== null}>
-            <FileText /> {busy === "docx" ? "Preparing…" : "Download DOCX"}
-          </Button>
-          <Button size="sm" onClick={() => dl("pdf")} disabled={busy !== null}>
-            <FileDown /> {busy === "pdf" ? "Preparing…" : "Download PDF"}
-          </Button>
-        </div>
-      </div>
-      <div className="mx-auto max-w-[720px] rounded-sm border border-border bg-card px-8 py-10 font-serif text-[14px] leading-[1.7] text-foreground shadow-raised sm:px-14">
-        {blocks.map((b, i) => {
-          if (b.kind === "spacer") return <div key={i} className="h-4" />;
-          if (b.kind === "heading")
-            return (
-              <p key={i} className="mt-4 mb-1 font-sans text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {b.text}
-              </p>
-            );
-          if (b.kind === "list")
-            return (
-              <ol key={i} className="mb-4 ml-5 list-decimal space-y-1.5 marker:font-mono marker:text-[12px] marker:text-muted-foreground">
-                {b.items?.map((t) => <li key={t} className="pl-1">{t}</li>)}
-              </ol>
-            );
-          return (
-            <p key={i} className={cn(b.bold && "font-semibold", b.kind === "para" && "mb-4")}>
-              {b.text}
-            </p>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-export function VerdictWorkspace({ result: r, isSample, backendCaseId, onReset }: Props) {
-  const v = VERDICT_META[r.verdict];
+export function VerdictWorkspace({ result, isSample, backendCaseId, onReset }: Props) {
+  const [r, setResult] = useState(result);
+  const [factsOpen, setFactsOpen] = useState(false);
+  const [letterOpen, setLetterOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [offlineEdited, setOfflineEdited] = useState(false);
+  const [revision, setRevision] = useState(0);
   const [purging, setPurging] = useState(false);
+
+  useEffect(() => {
+    setResult(result);
+    setOfflineEdited(false);
+    setRevision(0);
+  }, [result]);
+
+  const v = VERDICT_META[r.verdict];
+
+  const rerun = async (fields: EditableFacts) => {
+    const fallback = () => {
+      setResult(recalculateDemo(r, fields));
+      setOfflineEdited(true);
+      toast.info("Offline facts recalculated. Legal findings need human review.");
+    };
+    if (isSample || !backendCaseId || !(await checkHealth())) {
+      fallback();
+    } else {
+      try {
+        const updated = await patchCaseFacts(backendCaseId, fields);
+        setResult(updated);
+        setOfflineEdited(false);
+        toast.success("Analysis updated");
+      } catch (e) {
+        if (e instanceof ApiError && e.status === 0) fallback();
+        else throw e;
+      }
+    }
+    setRevision((n) => n + 1);
+  };
 
   const purge = async () => {
     setPurging(true);
     try {
       if (backendCaseId) await deleteCase(backendCaseId);
-      toast.success("Case purged — all documents and results deleted");
+      toast.success(
+        backendCaseId ? "Case documents and results deleted" : "Local case cleared",
+      );
+      setDeleteOpen(false);
       onReset();
     } catch {
       toast.error("Could not purge the case on the server. Try again.");
@@ -395,22 +355,40 @@ export function VerdictWorkspace({ result: r, isSample, backendCaseId, onReset }
   return (
     <section className="mx-auto max-w-6xl animate-rise px-4 py-10 sm:px-6">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <button
-          type="button"
-          onClick={onReset}
-          className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="size-4" /> New case
-        </button>
-        <Button variant="outline" size="sm" onClick={purge} disabled={purging}>
-          <Trash2 /> {purging ? "Purging…" : "Purge case data"}
+        <Button variant="ghost" size="sm" onClick={onReset}>
+          <ArrowLeft /> Start Over
         </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button size="sm" onClick={() => setLetterOpen(true)}>
+            <FileText /> Preview &amp; Download Appeal Letter
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setFactsOpen(true)}>
+            <RefreshCw /> Edit Facts &amp; Re-run
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setDeleteOpen(true)}
+            disabled={purging}
+          >
+            <Trash2 /> Delete My Data
+          </Button>
+        </div>
       </div>
 
-      {isSample && (
+      {(isSample || offlineEdited) && (
         <div className="mb-5 rounded-md border border-contestable-border bg-contestable-bg px-4 py-3 text-[12.5px] text-contestable">
-          The analysis service is offline, so this is a <strong>sample analysis</strong> — not
-          based on your uploaded documents. Connect the backend to analyse your own case.
+          {offlineEdited ? (
+            <>
+              Facts were edited offline, so prior automated legal findings have been withdrawn into{" "}
+              <strong>human-review mode</strong>. Reconnect the backend to re-run rule verification.
+            </>
+          ) : (
+            <>
+              The analysis service is offline, so this is a <strong>sample analysis</strong> — not
+              based on your uploaded documents. Connect the backend to analyse your own case.
+            </>
+          )}
         </div>
       )}
 
@@ -441,7 +419,12 @@ export function VerdictWorkspace({ result: r, isSample, backendCaseId, onReset }
       <div className="mt-5 grid gap-5 lg:grid-cols-[1.6fr_1fr]">
         <div className="surface p-6">
           <div className="flex flex-wrap items-center gap-3">
-            <span className={cn("inline-flex items-center gap-2 rounded-md border px-3 py-1.5 font-mono text-[13px] font-semibold uppercase tracking-wider", v.className)}>
+            <span
+              className={cn(
+                "inline-flex items-center gap-2 rounded-md border px-3 py-1.5 font-mono text-[13px] font-semibold uppercase tracking-wider",
+                v.className,
+              )}
+            >
               <span className={cn("size-2 rounded-full", v.dot)} />
               {v.label}
             </span>
@@ -476,7 +459,10 @@ export function VerdictWorkspace({ result: r, isSample, backendCaseId, onReset }
               {Array.from({ length: 20 }).map((_, i) => (
                 <span
                   key={i}
-                  className={cn("h-2 flex-1 rounded-[2px]", i < Math.round(r.confidence / 5) ? v.dot : "bg-secondary")}
+                  className={cn(
+                    "h-2 flex-1 rounded-[2px]",
+                    i < Math.round(r.confidence / 5) ? v.dot : "bg-secondary",
+                  )}
                 />
               ))}
             </div>
@@ -494,14 +480,20 @@ export function VerdictWorkspace({ result: r, isSample, backendCaseId, onReset }
             ].map((x) => (
               <div key={x.k} className="flex flex-col justify-center px-4 py-5">
                 <dt className="text-[11.5px] text-muted-foreground">{x.k}</dt>
-                <dd className={cn("mt-1 font-mono text-[17px] font-medium tabular sm:text-[19px]", x.cls)}>
+                <dd
+                  className={cn(
+                    "mt-1 font-mono text-[17px] font-medium tabular sm:text-[19px]",
+                    x.cls,
+                  )}
+                >
                   {formatOptionalINR(x.v)}
                 </dd>
               </div>
             ))}
           </dl>
           <div className="border-t border-border bg-background px-6 py-3 text-[12px] text-muted-foreground tabular">
-            Sum insured {formatOptionalINR(r.sum_insured)} · Repudiated {formatOptionalDate(r.repudiation_date)}
+            Sum insured {formatOptionalINR(r.sum_insured)} · Repudiated{" "}
+            {formatOptionalDate(r.repudiation_date)}
           </div>
         </div>
       </div>
@@ -522,11 +514,70 @@ export function VerdictWorkspace({ result: r, isSample, backendCaseId, onReset }
             <FileText /> Appeal Letter
           </Tabs.Trigger>
         </Tabs.List>
-        <Tabs.Content value="rules"><RulesTab r={r} /></Tabs.Content>
-        <Tabs.Content value="evidence"><EvidenceTab r={r} /></Tabs.Content>
-        <Tabs.Content value="deadlines"><DeadlinesTab r={r} /></Tabs.Content>
-        <Tabs.Content value="letter"><LetterTab r={r} /></Tabs.Content>
+        <Tabs.Content value="rules">
+          <RulesTab r={r} />
+        </Tabs.Content>
+        <Tabs.Content value="evidence">
+          <EvidenceTab r={r} />
+        </Tabs.Content>
+        <Tabs.Content value="deadlines">
+          <DeadlinesTab r={r} />
+        </Tabs.Content>
+        <Tabs.Content value="letter">
+          <div className="flex flex-wrap items-center justify-between gap-4 p-5">
+            <p className="max-w-xl text-[13px] text-muted-foreground">
+              Open the interactive appeal letter preview to fill in any highlighted{" "}
+              <code className="font-mono text-[12px] text-contestable">[[placeholder]]</code>{" "}
+              fields, verify enclosures, and export Word (.docx) or PDF (.pdf).
+            </p>
+            <Button onClick={() => setLetterOpen(true)}>
+              <FileText /> Preview &amp; Download Appeal Letter
+            </Button>
+          </div>
+        </Tabs.Content>
       </Tabs.Root>
+
+      <FactsEditorModal
+        key={`facts-${revision}`}
+        result={r}
+        open={factsOpen}
+        onOpenChange={setFactsOpen}
+        onReRun={rerun}
+      />
+      <LetterPreviewModal
+        key={`letter-${revision}`}
+        initialVersion={revision + 1}
+        result={r}
+        open={letterOpen}
+        onOpenChange={setLetterOpen}
+        backendCaseId={backendCaseId}
+        isSample={isSample || offlineEdited}
+      />
+      <Dialog
+        open={deleteOpen}
+        onOpenChange={(next) => {
+          if (!purging) setDeleteOpen(next);
+        }}
+      >
+        <DialogContent className="w-[calc(100%-2rem)] bg-card">
+          <DialogHeader>
+            <DialogTitle>Delete My Data?</DialogTitle>
+            <DialogDescription>
+              This permanently deletes this case&apos;s uploaded documents and analysis results.
+              This cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-wrap justify-end gap-2">
+            <Button variant="outline" disabled={purging} onClick={() => setDeleteOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" disabled={purging} onClick={purge}>
+              <Trash2 />
+              {purging ? "Deleting…" : "Confirm Delete"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

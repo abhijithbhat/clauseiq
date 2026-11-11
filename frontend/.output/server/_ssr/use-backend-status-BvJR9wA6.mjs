@@ -1,6 +1,6 @@
 import { t as PIPELINE_STAGES } from "./utils-WbrsqoLR.mjs";
 import { t as useQuery } from "../_libs/tanstack__react-query.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/use-backend-status-D_-Ii0gR.js
+//#region node_modules/.nitro/vite/services/ssr/assets/use-backend-status-BvJR9wA6.js
 function isBackendAnalysisResult(raw) {
 	return typeof raw.verdict === "object" && raw.verdict !== null && "label" in raw.verdict;
 }
@@ -21,6 +21,59 @@ function mapEvidenceSource(sourceType) {
 		case "DISCHARGE_SUMMARY": return "DISCHARGE_SUMMARY";
 		default: return "OTHER";
 	}
+}
+function documentKindTitle(kind) {
+	switch (kind) {
+		case "POLICY": return "Policy document";
+		case "REJECTION_LETTER": return "Rejection letter";
+		case "DISCHARGE": return "Discharge summary";
+		default: return "Supporting document";
+	}
+}
+var EDITABLE_SPAN_MAP = [
+	{
+		field: "policy_first_inception_date",
+		spanKeys: ["policy_first_inception_date", "first_inception_date"]
+	},
+	{
+		field: "admission_date",
+		spanKeys: ["admission_date"]
+	},
+	{
+		field: "continuous_coverage_months",
+		spanKeys: ["continuous_coverage_months"]
+	},
+	{
+		field: "grievance_sent_date",
+		spanKeys: ["grievance_sent_date"]
+	},
+	{
+		field: "grievance_received_date",
+		spanKeys: ["grievance_received_date"]
+	},
+	{
+		field: "grievance_reply_status",
+		spanKeys: ["grievance_reply_status"]
+	},
+	{
+		field: "claim_amount",
+		spanKeys: ["claim_amount_inr", "claim_amount"]
+	}
+];
+function buildFieldSources(spans) {
+	if (!spans) return void 0;
+	const out = {};
+	for (const { field, spanKeys } of EDITABLE_SPAN_MAP) for (const key of spanKeys) {
+		const span = spans[key];
+		if (span) {
+			out[field] = {
+				page: span.page,
+				document_title: documentKindTitle(span.document)
+			};
+			break;
+		}
+	}
+	return Object.keys(out).length > 0 ? out : void 0;
 }
 function evidenceDocumentTitle(sourceType) {
 	switch (sourceType) {
@@ -81,7 +134,8 @@ function adaptAnalysisResult(raw) {
 		name: rule.name,
 		outcome: mapRuleOutcome(rule.outcome),
 		citation: rule.law_ref?.trim() || "—",
-		finding: rule.explanation
+		finding: rule.explanation,
+		...rule.inputs ? { inputs: rule.inputs } : {}
 	}));
 	const ruleByEvidenceId = /* @__PURE__ */ new Map();
 	for (const rule of rawRules) for (const evId of rule.supporting_evidence_ids ?? []) if (!ruleByEvidenceId.has(evId)) ruleByEvidenceId.set(evId, `${rule.rule_id}: ${rule.name}`);
@@ -124,6 +178,10 @@ function adaptAnalysisResult(raw) {
 		admission_date: facts.admission_date ?? null,
 		repudiation_date: facts.rejection_date ?? null,
 		continuous_cover_months: facts.continuous_coverage_months ?? null,
+		grievance_sent_date: facts.grievance_sent_date ?? null,
+		grievance_received_date: facts.grievance_received_date ?? null,
+		grievance_reply_status: facts.grievance_reply_status ?? "UNKNOWN",
+		field_sources: buildFieldSources(facts.source_spans),
 		rejection_reason: facts.rejection_reason_text?.trim() || "No verbatim rejection reason extracted.",
 		cited_clause: citedClause,
 		verdict: raw.verdict.label,
@@ -289,6 +347,73 @@ async function analyzeCase(caseId, facts) {
 		body: JSON.stringify(facts ?? {})
 	}, 18e4));
 }
+async function patchCaseFacts(caseId, fields) {
+	const payload = {
+		policy_first_inception_date: fields.policy_first_inception_date || null,
+		admission_date: fields.admission_date || null,
+		continuous_coverage_months: Number.isFinite(fields.continuous_coverage_months) ? fields.continuous_coverage_months : null,
+		grievance_sent_date: fields.grievance_sent_date || null,
+		grievance_received_date: fields.grievance_received_date || null,
+		grievance_reply_status: fields.grievance_reply_status,
+		claim_amount_inr: Number.isFinite(fields.claim_amount) ? fields.claim_amount : null
+	};
+	try {
+		const raw = await request(`/cases/${encodeURIComponent(caseId)}/facts`, {
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(payload)
+		}, 18e4);
+		if (typeof raw === "object" && raw !== null && "verdict" in raw) return adaptAnalysisResult(raw);
+	} catch (e) {
+		if (!(e instanceof ApiError) || e.status !== 404 && e.status !== 405) throw e;
+	}
+	const dateFacts = {};
+	if (fields.policy_first_inception_date) dateFacts["policy_first_inception_date"] = fields.policy_first_inception_date;
+	if (fields.admission_date) dateFacts["admission_date"] = fields.admission_date;
+	return analyzeCase(caseId, dateFacts);
+}
+async function getCaseLetter(caseId) {
+	try {
+		return await request(`/cases/${encodeURIComponent(caseId)}/letter`, void 0, 15e3);
+	} catch (e) {
+		if (e instanceof ApiError && (e.status === 404 || e.status === 405 || e.status === 0)) return null;
+		throw e;
+	}
+}
+function getLetterDownloadUrl(caseId, format) {
+	return `${API_BASE_URL}/cases/${encodeURIComponent(caseId)}/letter?format=${format}`;
+}
+async function downloadBackendLetter(caseId, format, filename) {
+	const ctrl = new AbortController();
+	const t = setTimeout(() => ctrl.abort(), 3e4);
+	try {
+		const res = await fetch(getLetterDownloadUrl(caseId, format), { signal: ctrl.signal });
+		if (res.status === 404 || res.status === 405) return false;
+		if (!res.ok) {
+			let body = null;
+			try {
+				body = await res.json();
+			} catch {}
+			throw parseApiErrorPayload(body, res.status, res.statusText || "Download failed");
+		}
+		const blob = await res.blob();
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = filename;
+		document.body.appendChild(a);
+		a.click();
+		a.remove();
+		URL.revokeObjectURL(url);
+		return true;
+	} catch (e) {
+		if (e instanceof ApiError) throw e;
+		if (e instanceof Error && e.name === "AbortError") throw new ApiError("Letter download timed out. Please retry.", 408, "TIMEOUT");
+		return false;
+	} finally {
+		clearTimeout(t);
+	}
+}
 function deleteCase(caseId) {
 	return request(`/cases/${encodeURIComponent(caseId)}`, { method: "DELETE" });
 }
@@ -307,4 +432,4 @@ function useBackendStatus() {
 	};
 }
 //#endregion
-export { getProgress as a, useBackendStatus as c, deleteCase as i, analyzeCase as n, mapProgressToStages as o, createCase as r, uploadDocument as s, ApiError as t };
+export { deleteCase as a, getProgress as c, uploadDocument as d, useBackendStatus as f, createCase as i, mapProgressToStages as l, analyzeCase as n, downloadBackendLetter as o, checkHealth as r, getCaseLetter as s, ApiError as t, patchCaseFacts as u };

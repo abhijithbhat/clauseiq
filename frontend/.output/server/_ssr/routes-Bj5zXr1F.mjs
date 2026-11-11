@@ -1,13 +1,16 @@
 import { i as __toESM } from "../_runtime.mjs";
-import { f as require_react, n as CheckboxIndicator, p as require_jsx_runtime, t as Checkbox$1 } from "../_libs/@radix-ui/react-checkbox+[...].mjs";
-import { A as ArrowLeft, C as CloudUpload, D as CalendarClock, E as Check, O as BadgeCheck, S as Copy, T as ChevronDown, b as FileDown, d as Lock, f as LoaderCircle, g as Gavel, i as Timer, k as ArrowRight, l as RotateCcw, m as Landmark, n as TriangleAlert, o as ShieldAlert, p as ListChecks, r as Trash2, s as ScrollText, t as X, u as Quote, v as FileText, w as CircleCheck, y as FileSearch } from "../_libs/lucide-react.mjs";
+import { n as CheckboxIndicator, p as require_jsx_runtime, t as Checkbox$1 } from "../_libs/@radix-ui/react-checkbox+[...].mjs";
+import { u as require_react } from "../_libs/@floating-ui/react-dom+[...].mjs";
+import { A as BadgeCheck, C as Copy, D as ChevronDown, E as ChevronUp, M as ArrowLeft, O as Check, T as CircleCheck, _ as Gavel, b as FileSearch, d as Quote, f as Lock, h as Landmark, i as Timer, j as ArrowRight, k as CalendarClock, l as RotateCcw, m as ListChecks, n as TriangleAlert, o as ShieldAlert, p as LoaderCircle, r as Trash2, s as ScrollText, t as X, u as RefreshCw, w as CloudUpload, x as FileDown, y as FileText } from "../_libs/lucide-react.mjs";
 import { n as cn, t as PIPELINE_STAGES } from "./utils-WbrsqoLR.mjs";
 import { i as confidenceLabel, n as OUTCOME_META, r as VERDICT_META, t as Button } from "./verdict-V8xaGJcn.mjs";
 import { b as useRouter } from "../_libs/@tanstack/react-router+[...].mjs";
-import { a as getProgress, c as useBackendStatus, i as deleteCase, n as analyzeCase, o as mapProgressToStages, r as createCase, s as uploadDocument, t as ApiError } from "./use-backend-status-D_-Ii0gR.mjs";
+import { a as deleteCase, c as getProgress, d as uploadDocument, f as useBackendStatus, i as createCase, l as mapProgressToStages, n as analyzeCase, o as downloadBackendLetter, r as checkHealth, s as getCaseLetter, t as ApiError, u as patchCaseFacts } from "./use-backend-status-BvJR9wA6.mjs";
 import { n as toast } from "../_libs/sonner.mjs";
+import { a as DialogOverlay$1, i as DialogDescription$1, n as DialogClose, o as DialogPortal$1, r as DialogContent$1, s as DialogTitle$1, t as Dialog$1 } from "../_libs/@radix-ui/react-dialog+[...].mjs";
 import { i as Trigger, n as List, r as Root2, t as Content } from "../_libs/radix-ui__react-tabs.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-DOEFSz8w.js
+import { a as SelectItemIndicator, c as SelectPortal, d as SelectSeparator$1, f as SelectTrigger$1, i as SelectItem$1, l as SelectScrollDownButton$1, m as SelectViewport, n as SelectContent$1, o as SelectItemText, p as SelectValue$1, r as SelectIcon, s as SelectLabel$1, t as Select$1, u as SelectScrollUpButton$1 } from "../_libs/@radix-ui/react-select+[...].mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-Bj5zXr1F.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var Checkbox = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox$1, {
@@ -1128,6 +1131,49 @@ function ProcessingTracker({ stages, error, onRetry, onCancel, label }) {
 		})
 	});
 }
+var Dialog = Dialog$1;
+var DialogPortal = DialogPortal$1;
+var DialogOverlay = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogOverlay$1, {
+	ref,
+	className: cn("fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0", className),
+	...props
+}));
+DialogOverlay.displayName = DialogOverlay$1.displayName;
+var DialogContent = import_react.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogPortal, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogOverlay, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent$1, {
+	ref,
+	className: cn("fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg", className),
+	...props,
+	children: [children, /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogClose, {
+		className: "absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background cursor-pointer transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+			className: "sr-only",
+			children: "Close"
+		})]
+	})]
+})] }));
+DialogContent.displayName = DialogContent$1.displayName;
+var DialogHeader = ({ className, ...props }) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+	className: cn("flex flex-col space-y-1.5 text-center sm:text-left", className),
+	...props
+});
+DialogHeader.displayName = "DialogHeader";
+var DialogFooter = ({ className, ...props }) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+	className: cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2", className),
+	...props
+});
+DialogFooter.displayName = "DialogFooter";
+var DialogTitle = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle$1, {
+	ref,
+	className: cn("text-lg font-semibold leading-none tracking-tight", className),
+	...props
+}));
+DialogTitle.displayName = DialogTitle$1.displayName;
+var DialogDescription = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription$1, {
+	ref,
+	className: cn("text-sm text-muted-foreground", className),
+	...props
+}));
+DialogDescription.displayName = DialogDescription$1.displayName;
 function computeDeadlines(repudiationIso) {
 	return {
 		repudiation: repudiationIso,
@@ -1341,6 +1387,617 @@ async function downloadLetterDocx(blocks, filename) {
 	}) }] });
 	download(await Packer.toBlob(doc), filename);
 }
+var LETTER_LEGAL_FOOTER = "Drafted with ClauseIQ, an assistive tool. This is not legal advice. Please review before sending.";
+function factsFromResult(r) {
+	return {
+		policy_first_inception_date: r.first_inception_date ?? "",
+		admission_date: r.admission_date ?? "",
+		continuous_coverage_months: r.continuous_cover_months ?? 0,
+		grievance_sent_date: r.grievance_sent_date ?? "",
+		grievance_received_date: r.grievance_received_date ?? "",
+		grievance_reply_status: r.grievance_reply_status ?? "UNKNOWN",
+		claim_amount: r.claim_amount ?? 0
+	};
+}
+/** Offline edits cannot verify source documents: invalidate conclusions rather than invent a legal verdict. */
+function recalculateDemo(r, facts) {
+	return {
+		...r,
+		first_inception_date: facts.policy_first_inception_date,
+		admission_date: facts.admission_date,
+		continuous_cover_months: facts.continuous_coverage_months,
+		grievance_sent_date: facts.grievance_sent_date,
+		grievance_received_date: facts.grievance_received_date,
+		grievance_reply_status: facts.grievance_reply_status,
+		claim_amount: facts.claim_amount,
+		disallowed_amount: Math.max(0, facts.claim_amount - (r.settled_amount ?? 0)),
+		verdict: "INSUFFICIENT_INFO",
+		confidence: 0,
+		needs_human_review: true,
+		summary: "Offline recalculation: corrected facts and financial totals are shown below. The previous legal conclusion has been withdrawn until the documents can be re-analysed or reviewed by a qualified professional.",
+		appeal_grounds: ["[[reviewed_appeal_grounds]]"],
+		rules: r.rules.map((rule) => ({
+			...rule,
+			outcome: "NEEDS_INFO",
+			finding: "Corrected facts require fresh document verification; previous finding withdrawn.",
+			inputs: {
+				...rule.inputs,
+				...facts
+			}
+		}))
+	};
+}
+function deadlineStatus(date, today, actionRequired = false) {
+	if (!isValidISODate(date) || !isValidISODate(today)) return "action_needed";
+	const remaining = daysBetween(today, date);
+	if (remaining < 0) return actionRequired ? "action_needed" : "passed";
+	return remaining <= 7 ? "due soon" : "upcoming";
+}
+function timelineMilestones(r, today) {
+	const repDate = isValidISODate(r.repudiation_date) ? r.repudiation_date : null;
+	const received = isValidISODate(r.grievance_received_date) ? r.grievance_received_date : null;
+	const awaiting = r.grievance_reply_status !== "REPLY_RECEIVED";
+	const tat14Date = received ? addDays(received, 14) : null;
+	const wait30Date = received ? addDays(received, 30) : null;
+	const ombudsmanDate = repDate ? addYears(repDate, 1) : null;
+	return [
+		{
+			label: "Today's Date",
+			date: today,
+			status: "action_needed",
+			detail: "Review your next action."
+		},
+		{
+			label: "Repudiated Date",
+			date: repDate,
+			status: deadlineStatus(repDate, today),
+			detail: repDate ? "Date on the rejection letter." : "Repudiation date was not extracted from the rejection letter."
+		},
+		{
+			label: "14-day IRDAI Grievance TAT",
+			date: tat14Date,
+			status: deadlineStatus(tat14Date, today, awaiting),
+			detail: tat14Date ? "14 days from grievance receipt." : "Grievance receipt date is needed."
+		},
+		{
+			label: "30-day Rule 14 Ombudsman Wait Window",
+			date: wait30Date,
+			status: deadlineStatus(wait30Date, today),
+			detail: r.grievance_reply_status === "REPLY_RECEIVED" ? "Reply received: the no-response wait is not required; review eligibility." : "30 days from receipt for the no-response route; other eligibility conditions apply."
+		},
+		{
+			label: "1-Year Insurance Ombudsman Filing Limit",
+			date: ombudsmanDate,
+			status: deadlineStatus(ombudsmanDate, today, true),
+			detail: ombudsmanDate ? "Indicative date based on repudiation. A later grievance rejection or no-response trigger may change the legal filing limit; verify before relying on it." : "Repudiation date is needed to estimate the 1-year filing limit."
+		}
+	];
+}
+function presentOrToken(value, token) {
+	const cleaned = value?.trim();
+	if (!cleaned || cleaned === "Not stated" || cleaned === "Not specified") return token;
+	return cleaned;
+}
+function previewLetter(r) {
+	return [
+		...buildAppealLetter({
+			...r,
+			policyholder: presentOrToken(r.policyholder, "[[policyholder_name]]"),
+			policy_number: presentOrToken(r.policy_number, "[[policy_number]]"),
+			claim_number: presentOrToken(r.claim_number, "[[claim_number]]"),
+			hospital: presentOrToken(r.hospital, "[[hospital]]")
+		}).map((b) => {
+			if (b.text?.startsWith("Please note that")) return {
+				...b,
+				text: "If this grievance remains unresolved, I reserve the right to approach the Insurance Ombudsman, subject to the applicable waiting period and filing limit, and pursue other remedies available in law."
+			};
+			if (r.needs_human_review && b.text?.startsWith("The repudiation relies")) return {
+				...b,
+				text: `The repudiation relies on ${r.cited_clause}, stating: "${r.rejection_reason}" I request a review of the following corrected facts and grounds, subject to verification:`
+			};
+			return b;
+		}),
+		{
+			kind: "line",
+			text: "Address: [[postal_address]]"
+		},
+		{
+			kind: "line",
+			text: "Contact: [[contact_number]]"
+		},
+		{ kind: "spacer" },
+		{
+			kind: "para",
+			text: LETTER_LEGAL_FOOTER
+		}
+	];
+}
+function letterBlocksFromText(text) {
+	return text.split(/\r?\n/).map((line) => line.trim() === "" ? { kind: "spacer" } : {
+		kind: "line",
+		text: line
+	});
+}
+function placeholderKeys(blocks) {
+	return [...new Set(blocks.flatMap((b) => [b.text ?? "", ...b.items ?? []]).flatMap((t) => [...t.matchAll(/\[\[([^\]]+)\]\]/g)].map((m) => m[1] ?? "")).filter(Boolean))];
+}
+function fillLetter(blocks, values) {
+	const fill = (text) => text.replace(/\[\[([^\]]+)\]\]/g, (token, key) => values[key]?.trim() || token);
+	return blocks.map((b) => ({
+		...b,
+		...b.text !== void 0 ? { text: fill(b.text) } : {},
+		...b.items ? { items: b.items.map(fill) } : {}
+	}));
+}
+var statusClasses = {
+	upcoming: "border-info-border bg-info-bg text-info",
+	"due soon": "border-contestable-border bg-contestable-bg text-contestable",
+	passed: "border-border bg-secondary text-muted-foreground",
+	action_needed: "border-contestable-border bg-contestable-bg text-contestable"
+};
+function DeadlinesTimeline({ result }) {
+	const markers = timelineMilestones(result, todayISO());
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h3", {
+		className: "mb-4 flex items-center gap-2 text-sm font-medium",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CalendarClock, { className: "size-4 text-muted-foreground" }), "Appeal timeline"]
+	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("ol", {
+		className: "space-y-0",
+		children: markers.map((m, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("li", {
+			className: "relative grid grid-cols-[20px_1fr] gap-3 pb-5 last:pb-0",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "relative flex justify-center",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "relative z-10 mt-1 size-3 rounded-full border-2 border-card bg-primary" }), i < markers.length - 1 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "absolute top-4 bottom-[-4px] w-px bg-border" })]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "min-w-0",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex flex-wrap items-center justify-between gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-sm font-medium",
+							children: m.label
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+							className: cn("rounded border px-2 py-0.5 font-mono text-[10px]", statusClasses[m.status]),
+							children: m.status
+						})]
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "mt-1 font-mono text-xs text-foreground",
+						children: m.date ? isValidISODate(m.date) ? formatDate(m.date) : m.date : "Date needed"
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						className: "mt-1 text-xs leading-relaxed text-muted-foreground",
+						children: m.detail
+					})
+				]
+			})]
+		}, m.label))
+	})] });
+}
+var Input = import_react.forwardRef(({ className, type, ...props }, ref) => {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+		type,
+		className: cn("flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm", className),
+		ref,
+		...props
+	});
+});
+Input.displayName = "Input";
+var Select = Select$1;
+var SelectValue = SelectValue$1;
+var SelectTrigger = import_react.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectTrigger$1, {
+	ref,
+	className: cn("flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background cursor-pointer data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1", className),
+	...props,
+	children: [children, /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectIcon, {
+		asChild: true,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronDown, { className: "h-4 w-4 opacity-50" })
+	})]
+}));
+SelectTrigger.displayName = SelectTrigger$1.displayName;
+var SelectScrollUpButton = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectScrollUpButton$1, {
+	ref,
+	className: cn("flex cursor-default items-center justify-center py-1", className),
+	...props,
+	children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronUp, { className: "h-4 w-4" })
+}));
+SelectScrollUpButton.displayName = SelectScrollUpButton$1.displayName;
+var SelectScrollDownButton = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectScrollDownButton$1, {
+	ref,
+	className: cn("flex cursor-default items-center justify-center py-1", className),
+	...props,
+	children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronDown, { className: "h-4 w-4" })
+}));
+SelectScrollDownButton.displayName = SelectScrollDownButton$1.displayName;
+var SelectContent = import_react.forwardRef(({ className, children, position = "popper", ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectPortal, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent$1, {
+	ref,
+	className: cn("relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-(--radix-select-content-transform-origin)", position === "popper" && "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1", className),
+	position,
+	...props,
+	children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectScrollUpButton, {}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectViewport, {
+			className: cn("p-1", position === "popper" && "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"),
+			children
+		}),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectScrollDownButton, {})
+	]
+}) }));
+SelectContent.displayName = SelectContent$1.displayName;
+var SelectLabel = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectLabel$1, {
+	ref,
+	className: cn("px-2 py-1.5 text-sm font-semibold", className),
+	...props
+}));
+SelectLabel.displayName = SelectLabel$1.displayName;
+var SelectItem = import_react.forwardRef(({ className, children, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectItem$1, {
+	ref,
+	className: cn("relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50", className),
+	...props,
+	children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+		className: "absolute right-2 flex h-3.5 w-3.5 items-center justify-center",
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItemIndicator, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "h-4 w-4" }) })
+	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItemText, { children })]
+}));
+SelectItem.displayName = SelectItem$1.displayName;
+var SelectSeparator = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectSeparator$1, {
+	ref,
+	className: cn("-mx-1 my-1 h-px bg-muted", className),
+	...props
+}));
+SelectSeparator.displayName = SelectSeparator$1.displayName;
+var fields = [
+	{
+		key: "policy_first_inception_date",
+		label: "Policy first inception date",
+		type: "date"
+	},
+	{
+		key: "admission_date",
+		label: "Admission date",
+		type: "date"
+	},
+	{
+		key: "continuous_coverage_months",
+		label: "Continuous coverage (months)",
+		type: "number"
+	},
+	{
+		key: "grievance_sent_date",
+		label: "Grievance sent date",
+		type: "date"
+	},
+	{
+		key: "grievance_received_date",
+		label: "Grievance received date",
+		type: "date"
+	},
+	{
+		key: "grievance_reply_status",
+		label: "Grievance reply status",
+		type: "status"
+	},
+	{
+		key: "claim_amount",
+		label: "Claim amount (₹)",
+		type: "number"
+	}
+];
+var statuses = [
+	"UNKNOWN",
+	"AWAITING_REPLY",
+	"REPLY_RECEIVED",
+	"CONFIRMED_NO_RESPONSE"
+];
+function FactsEditorModal({ result, open, onOpenChange, onReRun }) {
+	const [facts, setFacts] = (0, import_react.useState)(() => factsFromResult(result));
+	const [busy, setBusy] = (0, import_react.useState)(false);
+	const [error, setError] = (0, import_react.useState)("");
+	const submit = async (event) => {
+		event.preventDefault();
+		setError("");
+		const claimAmount = Number(facts.claim_amount);
+		const continuousMonths = Number(facts.continuous_coverage_months);
+		if (!Number.isFinite(claimAmount) || claimAmount < 0) {
+			setError("Enter a valid non-negative claim amount.");
+			return;
+		}
+		if (!Number.isFinite(continuousMonths) || continuousMonths < 0) {
+			setError("Enter a valid non-negative continuous coverage duration.");
+			return;
+		}
+		if (facts.admission_date && facts.policy_first_inception_date && facts.admission_date < facts.policy_first_inception_date) {
+			setError("Admission cannot be before first policy inception.");
+			return;
+		}
+		if (facts.grievance_received_date && facts.grievance_sent_date && facts.grievance_received_date < facts.grievance_sent_date) {
+			setError("Grievance receipt cannot be before it was sent.");
+			return;
+		}
+		if (claimAmount < (result.settled_amount ?? 0)) {
+			setError("Claim amount cannot be less than the settled amount.");
+			return;
+		}
+		setBusy(true);
+		try {
+			await onReRun({
+				policy_first_inception_date: facts.policy_first_inception_date,
+				admission_date: facts.admission_date,
+				continuous_coverage_months: continuousMonths,
+				grievance_sent_date: facts.grievance_sent_date,
+				grievance_received_date: facts.grievance_received_date,
+				grievance_reply_status: facts.grievance_reply_status,
+				claim_amount: claimAmount
+			});
+			onOpenChange(false);
+		} catch (e) {
+			setError(e instanceof Error ? e.message : "Analysis failed. Please try again.");
+		} finally {
+			setBusy(false);
+		}
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+		open,
+		onOpenChange: (next) => {
+			if (!busy) onOpenChange(next);
+		},
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+			className: "max-h-[80dvh] w-[calc(100%-2rem)] max-w-2xl overflow-y-auto bg-card",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Edit Key Facts" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: "Corrected facts are user-provided; document citations remain unchanged until verified." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("form", {
+				onSubmit: submit,
+				className: "space-y-4",
+				children: [
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "divide-y divide-border",
+						children: fields.map(({ key, label, type }) => {
+							const source = result.field_sources?.[key];
+							return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "grid gap-2 py-3 sm:grid-cols-[1fr_1fr] sm:items-center",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+									htmlFor: `fact-${key}`,
+									className: "text-sm font-medium",
+									children: label
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "mt-1",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+										title: source?.document_title,
+										className: "inline-block rounded-full border border-border bg-background px-2 py-0.5 font-mono text-[10px] text-muted-foreground",
+										children: source ? `Page ${source.page} · ${source.document_title}` : "Source page unavailable"
+									})
+								})] }), type === "status" ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+									value: facts.grievance_reply_status,
+									disabled: busy,
+									onValueChange: (value) => {
+										if (statuses.includes(value)) setFacts((f) => ({
+											...f,
+											grievance_reply_status: value
+										}));
+									},
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, {
+										id: `fact-${key}`,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, {})
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectContent, { children: statuses.map((s) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+										value: s,
+										children: s
+									}, s)) })]
+								}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									id: `fact-${key}`,
+									type,
+									value: facts[key],
+									disabled: busy,
+									required: !key.startsWith("grievance_"),
+									...type === "number" ? {
+										min: 0,
+										step: 1
+									} : {},
+									onChange: (e) => setFacts((f) => ({
+										...f,
+										[key]: type === "number" ? e.target.value === "" ? "" : Number(e.target.value) : e.target.value
+									}))
+								})]
+							}, key);
+						})
+					}),
+					error && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						role: "alert",
+						className: "text-sm text-destructive",
+						children: error
+					}),
+					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex flex-wrap justify-end gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							type: "button",
+							variant: "outline",
+							disabled: busy,
+							onClick: () => onOpenChange(false),
+							children: "Cancel"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+							type: "submit",
+							disabled: busy,
+							children: [busy ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { className: "animate-spin" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RefreshCw, {}), busy ? "Re-running…" : "Re-run Analysis"]
+						})]
+					})
+				]
+			})]
+		})
+	});
+}
+var DEFAULT_ENCLOSURES = [
+	"Policy schedule and wording",
+	"Rejection / repudiation letter",
+	"Discharge summary",
+	"Bills and payment receipts"
+];
+function LetterPreviewModal({ result, open, onOpenChange, initialVersion = 1, backendCaseId = null, isSample = true }) {
+	const [backendText, setBackendText] = (0, import_react.useState)(null);
+	const [backendEnclosures, setBackendEnclosures] = (0, import_react.useState)(null);
+	const [values, setValues] = (0, import_react.useState)({});
+	const [version, setVersion] = (0, import_react.useState)(initialVersion);
+	const [checked, setChecked] = (0, import_react.useState)([]);
+	const [busy, setBusy] = (0, import_react.useState)(null);
+	(0, import_react.useEffect)(() => {
+		if (!open || isSample || !backendCaseId) {
+			setBackendText(null);
+			setBackendEnclosures(null);
+			return;
+		}
+		let cancelled = false;
+		getCaseLetter(backendCaseId).then((resp) => {
+			if (cancelled || !resp) return;
+			const text = resp.text ?? resp.content ?? null;
+			if (text) setBackendText(text);
+			if (typeof resp.version === "number" && resp.version >= 1) setVersion(resp.version);
+			if (resp.enclosures && resp.enclosures.length > 0) setBackendEnclosures(resp.enclosures);
+		}).catch(() => {});
+		return () => {
+			cancelled = true;
+		};
+	}, [
+		open,
+		isSample,
+		backendCaseId
+	]);
+	const blocks = (0, import_react.useMemo)(() => backendText ? letterBlocksFromText(backendText) : previewLetter(result), [backendText, result]);
+	const enclosures = backendEnclosures ?? DEFAULT_ENCLOSURES;
+	const ready = (0, import_react.useMemo)(() => fillLetter(blocks, values), [blocks, values]);
+	const missing = (0, import_react.useMemo)(() => placeholderKeys(ready), [ready]);
+	const hasInlineOverrides = (0, import_react.useMemo)(() => Object.values(values).some((v) => v.trim().length > 0), [values]);
+	const inline = (text) => text.split(/(\[\[[^\]]+\]\])/g).map((part, index) => {
+		const key = /^\[\[([^\]]+)\]\]$/.exec(part)?.[1];
+		if (!key) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: part }, index);
+		return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+			className: "mx-1 inline-flex max-w-full flex-col align-middle",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+				className: "rounded-t border border-contestable-border bg-contestable-bg px-2 py-0.5 font-sans text-[11px] text-contestable",
+				children: part
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+				"aria-label": `Fill ${key}`,
+				className: "h-8 w-56 max-w-full rounded-t-none border-contestable-border font-sans",
+				value: values[key] ?? "",
+				onChange: (e) => {
+					const nextVal = e.target.value;
+					setValues((v) => ({
+						...v,
+						[key]: nextVal
+					}));
+					setVersion((v) => v === initialVersion ? initialVersion + 1 : v);
+				}
+			})]
+		}, index);
+	});
+	const claimSlug = (result.claim_number && result.claim_number !== "Not stated" ? result.claim_number : result.case_id).replace(/[^A-Za-z0-9]+/g, "-");
+	const insurerLabel = result.insurer && result.insurer !== "Not stated" ? result.insurer : "the insurer";
+	const copy = async () => {
+		try {
+			await navigator.clipboard.writeText(letterToPlainText(ready));
+			toast.success("Letter copied to clipboard");
+		} catch {
+			toast.error("Could not access the clipboard");
+		}
+	};
+	const download = async (kind) => {
+		setBusy(kind);
+		const filename = `ClauseIQ_Appeal_${claimSlug}_v${version}.${kind}`;
+		try {
+			let downloadedRemotely = false;
+			if (backendCaseId && !isSample && !hasInlineOverrides) downloadedRemotely = await downloadBackendLetter(backendCaseId, kind, filename);
+			if (!downloadedRemotely) if (kind === "pdf") await downloadLetterPdf(ready, filename);
+			else await downloadLetterDocx(ready, filename);
+		} catch {
+			toast.error("Download failed. Please try again.");
+		} finally {
+			setBusy(null);
+		}
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+		open,
+		onOpenChange,
+		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+			className: "max-h-[80dvh] w-[calc(100%-2rem)] max-w-4xl overflow-y-auto bg-card",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogTitle, {
+					className: "flex flex-wrap items-center gap-3 pr-5",
+					children: [
+						"Appeal Letter",
+						" ",
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+							className: "rounded border border-border bg-secondary px-2 py-1 font-mono text-xs text-muted-foreground",
+							children: ["v", version]
+						})
+					]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogDescription, { children: [
+					"Addressed to the Grievance Redressal Officer of ",
+					insurerLabel,
+					". Review before sending."
+				] })] }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "border-y border-border py-4 font-serif text-sm leading-relaxed",
+					children: blocks.map((b, i) => {
+						if (b.kind === "spacer") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-3" }, i);
+						if (b.kind === "list") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("ol", {
+							className: "mb-4 ml-5 list-decimal space-y-2",
+							children: b.items?.map((t, j) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: inline(t) }, j))
+						}, i);
+						return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: cn("break-words", b.bold && "font-semibold", b.kind === "para" && "mb-4", b.kind === "heading" && "mt-3 font-sans text-xs font-semibold uppercase text-muted-foreground"),
+							children: inline(b.text ?? "")
+						}, i);
+					})
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
+					"aria-label": "Enclosure Checklist",
+					className: "rounded-md border border-border bg-background p-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
+						className: "mb-3 text-sm font-medium",
+						children: "Enclosure Checklist"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "grid gap-3 sm:grid-cols-2",
+						children: enclosures.map((item, i) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", {
+							htmlFor: `enclosure-${i}`,
+							className: "flex items-start gap-2 text-xs text-muted-foreground",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Checkbox, {
+								id: `enclosure-${i}`,
+								checked: checked.includes(item),
+								onCheckedChange: (next) => setChecked((c) => next ? [...c, item] : c.filter((t) => t !== item))
+							}), item]
+						}, item))
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "text-xs leading-relaxed text-muted-foreground",
+					children: LETTER_LEGAL_FOOTER
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex flex-wrap items-center justify-between gap-3",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+						"aria-live": "polite",
+						className: "text-xs text-contestable",
+						children: missing.length ? `${missing.length} placeholder fields remaining — fill above or download with [[...]] placeholders` : "All placeholder fields filled"
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex flex-wrap gap-2",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+								variant: "outline",
+								onClick: copy,
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Copy, {}), "Copy Text"]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+								variant: "outline",
+								onClick: () => download("docx"),
+								disabled: busy !== null,
+								children: [busy === "docx" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { className: "animate-spin" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, {}), "Download Word (.docx)"]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+								onClick: () => download("pdf"),
+								disabled: busy !== null,
+								children: [busy === "pdf" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { className: "animate-spin" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileDown, {}), "Download PDF (.pdf)"]
+							})
+						]
+					})]
+				})
+			]
+		})
+	});
+}
 var SOURCE_LABEL = {
 	POLICY: "Policy document",
 	REJECTION_LETTER: "Rejection letter",
@@ -1405,34 +2062,49 @@ function RulesTab({ r }) {
 				colSpan: 5,
 				className: "px-5 py-6 text-center text-[13px] text-muted-foreground",
 				children: "No deterministic rule checks were returned for this case."
-			}) }) : r.rules.map((x) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
-				className: "border-b border-border align-top transition-colors duration-150 ease-out last:border-0 hover:bg-background",
-				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
-						className: "px-5 py-3 font-mono text-[12px] text-muted-foreground",
-						children: x.id
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
-						className: "px-3 py-3 font-medium text-foreground",
-						children: x.name
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
-						className: "px-3 py-3",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: cn("inline-block whitespace-nowrap rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider", OUTCOME_META[x.outcome].className),
-							children: OUTCOME_META[x.outcome].label
+			}) }) : r.rules.map((x) => {
+				const inputEntries = x.inputs ? Object.entries(x.inputs) : [];
+				return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("tr", {
+					className: "border-b border-border align-top transition-colors duration-150 ease-out last:border-0 hover:bg-background",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
+							className: "px-5 py-3 font-mono text-[12px] text-muted-foreground",
+							children: x.id
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
+							className: "px-3 py-3 font-medium text-foreground",
+							children: x.name
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
+							className: "px-3 py-3",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: cn("inline-block whitespace-nowrap rounded border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider", OUTCOME_META[x.outcome].className),
+								children: OUTCOME_META[x.outcome].label
+							})
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
+							className: "px-3 py-3 text-muted-foreground",
+							children: x.citation
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("td", {
+							className: "px-5 py-3 text-muted-foreground",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: x.finding }), inputEntries.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("dl", {
+								className: "mt-2 space-y-1 text-xs",
+								children: inputEntries.map(([key, value]) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex flex-wrap gap-x-2",
+									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("dt", {
+										className: "font-medium text-foreground/80",
+										children: key.replace(/_/g, " ")
+									}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("dd", {
+										className: "break-all font-mono",
+										children: value == null ? "Not provided" : typeof value === "object" ? JSON.stringify(value) : String(value)
+									})]
+								}, key))
+							})]
 						})
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
-						className: "px-3 py-3 text-muted-foreground",
-						children: x.citation
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("td", {
-						className: "px-5 py-3 text-muted-foreground",
-						children: x.finding
-					})
-				]
-			}, x.id)) })]
+					]
+				}, x.id);
+			}) })]
 		})
 	})] });
 }
@@ -1496,53 +2168,24 @@ function EvidenceTab({ r }) {
 	});
 }
 function DeadlinesTab({ r }) {
-	if (!isValidISODate(r.repudiation_date)) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "space-y-4 p-5",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "rounded-md border border-border bg-background p-5 text-[13px] text-muted-foreground",
-			children: "The rejection / repudiation date was not extracted from your documents, so statutory 30-day grievance and 1-year Insurance Ombudsman timeline dates could not be computed."
-		}), r.backend_deadlines && r.backend_deadlines.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "grid gap-3 md:grid-cols-2",
-			children: r.backend_deadlines.map((dl) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "rounded-md border border-border p-4",
-				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "eyebrow",
-						children: dl.kind.replace(/_/g, " ")
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "mt-1 font-mono text-[14px] text-foreground",
-						children: formatOptionalDate(dl.due_date, dl.due_date)
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "mt-1 font-mono text-[11px] text-muted-foreground",
-						children: dl.status
-					})
-				]
-			}, `${dl.kind}-${dl.due_date}`))
-		})]
-	});
-	const d = computeDeadlines(r.repudiation_date);
+	const hasRepDate = isValidISODate(r.repudiation_date);
+	const d = hasRepDate ? computeDeadlines(r.repudiation_date) : null;
 	const today = todayISO();
-	const span = Math.max(1, daysBetween(d.repudiation, d.ombudsmanLastDate));
-	const elapsed = Math.min(Math.max(daysBetween(d.repudiation, today), 0), span);
-	const grievanceLeft = daysBetween(today, d.grievanceResponseDue);
-	const ombLeft = daysBetween(today, d.ombudsmanLastDate);
-	const pos = (iso) => `${daysBetween(d.repudiation, iso) / span * 100}%`;
+	const ombLeft = d ? daysBetween(today, d.ombudsmanLastDate) : null;
 	const cards = [
 		{
 			icon: ShieldAlert,
 			title: "Insurer grievance",
-			value: `30 days`,
-			body: `File with the Grievance Redressal Officer now. The insurer must resolve within 30 days; if filed today, a response is due by ${formatDate(addTodayDays(30))}.`,
-			status: grievanceLeft >= 0 ? `${grievanceLeft} days left in first window` : "File immediately"
+			value: "14 days",
+			body: "The IRDAI grievance resolution target is 14 days from receipt. The Rule 14 no-response Ombudsman wait window is a separate 30-day period.",
+			status: r.grievance_received_date ? "See timeline for dates" : "Record grievance receipt date"
 		},
 		{
 			icon: Landmark,
 			title: "Insurance Ombudsman",
 			value: "1 year",
-			body: `If unresolved or rejected, complain to the Ombudsman within one year of repudiation — last date ${formatDate(d.ombudsmanLastDate)}. Claims up to ₹50 lakh; free of cost.`,
-			status: ombLeft >= 0 ? `${ombLeft} days remaining` : "Window closed"
+			body: d ? `If unresolved or rejected, review Ombudsman eligibility. Indicative one-year date from repudiation: ${formatDate(d.ombudsmanLastDate)}; the applicable grievance trigger may change this. Claims up to ₹50 lakh; free of cost.` : "If unresolved or rejected, complaints must generally be filed within 1 year of rejection or final grievance reply. Claims up to ₹50 lakh; free of cost.",
+			status: ombLeft == null ? "Repudiation date needed" : ombLeft >= 0 ? `${ombLeft} days remaining` : "Window closed"
 		},
 		{
 			icon: Gavel,
@@ -1554,197 +2197,96 @@ function DeadlinesTab({ r }) {
 	];
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "p-5",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "rounded-md border border-border bg-background p-5",
-			children: [
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "flex items-center justify-between text-[12px]",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-						className: "font-medium text-foreground",
-						children: "Appeal window"
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-						className: "font-mono text-muted-foreground tabular",
-						children: [
-							"Day ",
-							elapsed,
-							" of ",
-							span
-						]
-					})]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "relative mt-14 h-1.5 rounded-full bg-secondary",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "absolute inset-y-0 left-0 rounded-full bg-primary transition-[width] duration-700 ease-out",
-						style: { width: `${elapsed / span * 100}%` }
-					}), [
-						{
-							iso: d.repudiation,
-							label: "Repudiated",
-							date: formatDate(d.repudiation),
-							align: "left"
-						},
-						{
-							iso: d.grievanceResponseDue,
-							label: "30-day TAT",
-							date: formatDate(d.grievanceResponseDue),
-							align: "center"
-						},
-						{
-							iso: d.ombudsmanLastDate,
-							label: "Ombudsman limit",
-							date: formatDate(d.ombudsmanLastDate),
-							align: "right"
-						}
-					].map((m) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: cn("absolute top-1/2 flex flex-col", m.align === "left" && "items-start", m.align === "center" && "-translate-x-1/2 items-center", m.align === "right" && "-translate-x-full items-end"),
-						style: { left: pos(m.iso) },
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "-mt-[5px] size-2.5 rounded-full border-2 border-card bg-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-							className: cn("flex flex-col whitespace-nowrap", m.align === "center" ? "absolute bottom-full mb-3 items-center" : "mt-2", m.align === "right" && "items-end"),
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "text-[11px] font-medium text-foreground",
-								children: m.label
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-								className: "font-mono text-[10.5px] text-muted-foreground",
-								children: m.date
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DeadlinesTimeline, { result: r }),
+			!hasRepDate && r.backend_deadlines && r.backend_deadlines.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "mt-4 grid gap-3 md:grid-cols-2",
+				children: r.backend_deadlines.map((dl) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "rounded-md border border-border p-4",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "eyebrow",
+							children: dl.kind.replace(/_/g, " ")
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "mt-1 font-mono text-[14px] text-foreground",
+							children: formatOptionalDate(dl.due_date, dl.due_date)
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "mt-1 font-mono text-[11px] text-muted-foreground",
+							children: dl.status
+						})
+					]
+				}, `${dl.kind}-${dl.due_date}`))
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "mt-6 grid gap-4 md:grid-cols-3",
+				children: cards.map(({ icon: Icon, ...c }) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "lift rounded-md border border-border p-4",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-center justify-between",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon, { className: "size-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "font-mono text-[15px] font-medium text-foreground",
+								children: c.value
 							})]
-						})]
-					}, m.label))]
-				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-12" })
-			]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "mt-4 grid gap-4 md:grid-cols-3",
-			children: cards.map(({ icon: Icon, ...c }) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "lift rounded-md border border-border p-4",
-				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "flex items-center justify-between",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Icon, { className: "size-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-							className: "font-mono text-[15px] font-medium text-foreground",
-							children: c.value
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "mt-3 text-[13.5px] font-medium text-foreground",
-						children: c.title
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "mt-1 text-[12.5px] leading-relaxed text-muted-foreground",
-						children: c.body
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-						className: "mt-3 border-t border-border pt-2.5 font-mono text-[11px] text-foreground",
-						children: c.status
-					})
-				]
-			}, c.title))
-		})]
-	});
-}
-function addTodayDays(n) {
-	const t = /* @__PURE__ */ new Date();
-	t.setUTCDate(t.getUTCDate() + n);
-	return t.toISOString().slice(0, 10);
-}
-function LetterTab({ r }) {
-	const blocks = (0, import_react.useMemo)(() => buildAppealLetter(r), [r]);
-	const [busy, setBusy] = (0, import_react.useState)(null);
-	const base = `ClauseIQ_Appeal_${(r.claim_number && r.claim_number !== "Not stated" ? r.claim_number : r.case_id).replace(/[^A-Za-z0-9]+/g, "-")}`;
-	const insurerLabel = r.insurer && r.insurer !== "Not stated" ? r.insurer : "the insurer";
-	const copy = async () => {
-		try {
-			await navigator.clipboard.writeText(letterToPlainText(blocks));
-			toast.success("Letter copied to clipboard");
-		} catch {
-			toast.error("Could not access the clipboard");
-		}
-	};
-	const dl = async (kind) => {
-		setBusy(kind);
-		try {
-			if (kind === "pdf") await downloadLetterPdf(blocks, `${base}.pdf`);
-			else await downloadLetterDocx(blocks, `${base}.docx`);
-		} catch {
-			toast.error("Download failed — please try again");
-		} finally {
-			setBusy(null);
-		}
-	};
-	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "p-5",
-		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-			className: "mb-4 flex flex-wrap items-center justify-between gap-3",
-			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-				className: "max-w-lg text-[12.5px] text-muted-foreground",
-				children: [
-					"Addressed to the Grievance Redressal Officer of ",
-					insurerLabel,
-					". Review every statement and attach supporting documents before sending."
-				]
-			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-				className: "flex flex-wrap gap-2",
-				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-						variant: "outline",
-						size: "sm",
-						onClick: copy,
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Copy, {}), " Copy Letter"]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-						variant: "outline",
-						size: "sm",
-						onClick: () => dl("docx"),
-						disabled: busy !== null,
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, {}),
-							" ",
-							busy === "docx" ? "Preparing…" : "Download DOCX"
-						]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-						size: "sm",
-						onClick: () => dl("pdf"),
-						disabled: busy !== null,
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileDown, {}),
-							" ",
-							busy === "pdf" ? "Preparing…" : "Download PDF"
-						]
-					})
-				]
-			})]
-		}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "mx-auto max-w-[720px] rounded-sm border border-border bg-card px-8 py-10 font-serif text-[14px] leading-[1.7] text-foreground shadow-raised sm:px-14",
-			children: blocks.map((b, i) => {
-				if (b.kind === "spacer") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "h-4" }, i);
-				if (b.kind === "heading") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-					className: "mt-4 mb-1 font-sans text-[12px] font-semibold uppercase tracking-wider text-muted-foreground",
-					children: b.text
-				}, i);
-				if (b.kind === "list") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("ol", {
-					className: "mb-4 ml-5 list-decimal space-y-1.5 marker:font-mono marker:text-[12px] marker:text-muted-foreground",
-					children: b.items?.map((t) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", {
-						className: "pl-1",
-						children: t
-					}, t))
-				}, i);
-				return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-					className: cn(b.bold && "font-semibold", b.kind === "para" && "mb-4"),
-					children: b.text
-				}, i);
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "mt-3 text-[13.5px] font-medium text-foreground",
+							children: c.title
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "mt-1 text-[12.5px] leading-relaxed text-muted-foreground",
+							children: c.body
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "mt-3 border-t border-border pt-2.5 font-mono text-[11px] text-foreground",
+							children: c.status
+						})
+					]
+				}, c.title))
 			})
-		})]
+		]
 	});
 }
-function VerdictWorkspace({ result: r, isSample, backendCaseId, onReset }) {
-	const v = VERDICT_META[r.verdict];
+function VerdictWorkspace({ result, isSample, backendCaseId, onReset }) {
+	const [r, setResult] = (0, import_react.useState)(result);
+	const [factsOpen, setFactsOpen] = (0, import_react.useState)(false);
+	const [letterOpen, setLetterOpen] = (0, import_react.useState)(false);
+	const [deleteOpen, setDeleteOpen] = (0, import_react.useState)(false);
+	const [offlineEdited, setOfflineEdited] = (0, import_react.useState)(false);
+	const [revision, setRevision] = (0, import_react.useState)(0);
 	const [purging, setPurging] = (0, import_react.useState)(false);
+	(0, import_react.useEffect)(() => {
+		setResult(result);
+		setOfflineEdited(false);
+		setRevision(0);
+	}, [result]);
+	const v = VERDICT_META[r.verdict];
+	const rerun = async (fields) => {
+		const fallback = () => {
+			setResult(recalculateDemo(r, fields));
+			setOfflineEdited(true);
+			toast.info("Offline facts recalculated. Legal findings need human review.");
+		};
+		if (isSample || !backendCaseId || !await checkHealth()) fallback();
+		else try {
+			const updated = await patchCaseFacts(backendCaseId, fields);
+			setResult(updated);
+			setOfflineEdited(false);
+			toast.success("Analysis updated");
+		} catch (e) {
+			if (e instanceof ApiError && e.status === 0) fallback();
+			else throw e;
+		}
+		setRevision((n) => n + 1);
+	};
 	const purge = async () => {
 		setPurging(true);
 		try {
 			if (backendCaseId) await deleteCase(backendCaseId);
-			toast.success("Case purged — all documents and results deleted");
+			toast.success(backendCaseId ? "Case documents and results deleted" : "Local case cleared");
+			setDeleteOpen(false);
 			onReset();
 		} catch {
 			toast.error("Could not purge the case on the server. Try again.");
@@ -1758,30 +2300,47 @@ function VerdictWorkspace({ result: r, isSample, backendCaseId, onReset }) {
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "mb-6 flex flex-wrap items-center justify-between gap-3",
-				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-					type: "button",
-					onClick: onReset,
-					className: "inline-flex items-center gap-1.5 text-[13px] text-muted-foreground hover:text-foreground",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "size-4" }), " New case"]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-					variant: "outline",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					variant: "ghost",
 					size: "sm",
-					onClick: purge,
-					disabled: purging,
+					onClick: onReset,
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, {}), " Start Over"]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex flex-wrap gap-2",
 					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, {}),
-						" ",
-						purging ? "Purging…" : "Purge case data"
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+							size: "sm",
+							onClick: () => setLetterOpen(true),
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, {}), " Preview & Download Appeal Letter"]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+							variant: "outline",
+							size: "sm",
+							onClick: () => setFactsOpen(true),
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RefreshCw, {}), " Edit Facts & Re-run"]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+							variant: "outline",
+							size: "sm",
+							onClick: () => setDeleteOpen(true),
+							disabled: purging,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, {}), " Delete My Data"]
+						})
 					]
 				})]
 			}),
-			isSample && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			(isSample || offlineEdited) && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				className: "mb-5 rounded-md border border-contestable-border bg-contestable-bg px-4 py-3 text-[12.5px] text-contestable",
-				children: [
+				children: offlineEdited ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
+					"Facts were edited offline, so prior automated legal findings have been withdrawn into",
+					" ",
+					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "human-review mode" }),
+					". Reconnect the backend to re-run rule verification."
+				] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
 					"The analysis service is offline, so this is a ",
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: "sample analysis" }),
 					" — not based on your uploaded documents. Connect the backend to analyse your own case."
-				]
+				] })
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "surface",
@@ -1937,7 +2496,8 @@ function VerdictWorkspace({ result: r, isSample, backendCaseId, onReset }) {
 							children: [
 								"Sum insured ",
 								formatOptionalINR(r.sum_insured),
-								" · Repudiated ",
+								" · Repudiated",
+								" ",
 								formatOptionalDate(r.repudiation_date)
 							]
 						})
@@ -1987,9 +2547,64 @@ function VerdictWorkspace({ result: r, isSample, backendCaseId, onReset }) {
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Content, {
 						value: "letter",
-						children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LetterTab, { r })
+						children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex flex-wrap items-center justify-between gap-4 p-5",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+								className: "max-w-xl text-[13px] text-muted-foreground",
+								children: [
+									"Open the interactive appeal letter preview to fill in any highlighted",
+									" ",
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("code", {
+										className: "font-mono text-[12px] text-contestable",
+										children: "[[placeholder]]"
+									}),
+									" ",
+									"fields, verify enclosures, and export Word (.docx) or PDF (.pdf)."
+								]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+								onClick: () => setLetterOpen(true),
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FileText, {}), " Preview & Download Appeal Letter"]
+							})]
+						})
 					})
 				]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FactsEditorModal, {
+				result: r,
+				open: factsOpen,
+				onOpenChange: setFactsOpen,
+				onReRun: rerun
+			}, `facts-${revision}`),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LetterPreviewModal, {
+				initialVersion: revision + 1,
+				result: r,
+				open: letterOpen,
+				onOpenChange: setLetterOpen,
+				backendCaseId,
+				isSample: isSample || offlineEdited
+			}, `letter-${revision}`),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Dialog, {
+				open: deleteOpen,
+				onOpenChange: (next) => {
+					if (!purging) setDeleteOpen(next);
+				},
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, {
+					className: "w-[calc(100%-2rem)] bg-card",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Delete My Data?" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogDescription, { children: "This permanently deletes this case's uploaded documents and analysis results. This cannot be undone." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex flex-wrap justify-end gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+							variant: "outline",
+							disabled: purging,
+							onClick: () => setDeleteOpen(false),
+							children: "Cancel"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+							variant: "destructive",
+							disabled: purging,
+							onClick: purge,
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, {}), purging ? "Deleting…" : "Confirm Delete"]
+						})]
+					})]
+				})
 			})
 		]
 	});

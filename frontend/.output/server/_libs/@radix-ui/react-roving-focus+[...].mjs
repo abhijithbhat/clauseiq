@@ -1,26 +1,12 @@
 import { i as __toESM } from "../../_runtime.mjs";
-import { a as useControllableState, d as useComposedRefs, f as require_react, o as useLayoutEffect2, p as require_jsx_runtime, r as Primitive, s as createContextScope } from "./react-checkbox+[...].mjs";
+import { c as useLayoutEffect2, f as useComposedRefs, l as createContextScope, p as require_jsx_runtime, r as Primitive, s as useControllableState } from "./react-checkbox+[...].mjs";
+import { u as require_react } from "../@floating-ui/react-dom+[...].mjs";
 import { t as composeEventHandlers } from "../radix-ui__primitive.mjs";
 import { t as createCollection } from "../radix-ui__react-collection.mjs";
-import { t as useId } from "../radix-ui__react-id.mjs";
+import { h as useId, m as useCallbackRef } from "./react-dialog+[...].mjs";
 import { t as useDirection } from "../radix-ui__react-direction.mjs";
-//#region node_modules/@radix-ui/react-use-callback-ref/dist/index.mjs
-var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
-var __defProp$2 = Object.defineProperty;
-var __name$2 = (target, value) => __defProp$2(target, "name", {
-	value,
-	configurable: true
-});
-function useCallbackRef(callback) {
-	const callbackRef = import_react.useRef(callback);
-	import_react.useEffect(() => {
-		callbackRef.current = callback;
-	});
-	return import_react.useMemo(() => ((...args) => callbackRef.current?.(...args)), []);
-}
-__name$2(useCallbackRef, "useCallbackRef");
-//#endregion
 //#region node_modules/@radix-ui/react-use-is-hydrated/dist/index.mjs
+var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
 var __defProp$1 = Object.defineProperty;
 var __name$1 = (target, value) => __defProp$1(target, "name", {
 	value,

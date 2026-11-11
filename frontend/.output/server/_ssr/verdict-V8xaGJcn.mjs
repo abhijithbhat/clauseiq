@@ -1,5 +1,6 @@
 import { i as __toESM } from "../_runtime.mjs";
-import { f as require_react, l as Slot, p as require_jsx_runtime } from "../_libs/@radix-ui/react-checkbox+[...].mjs";
+import { p as require_jsx_runtime, u as Slot } from "../_libs/@radix-ui/react-checkbox+[...].mjs";
+import { u as require_react } from "../_libs/@floating-ui/react-dom+[...].mjs";
 import { t as cva } from "../_libs/class-variance-authority+clsx.mjs";
 import { n as cn } from "./utils-WbrsqoLR.mjs";
 //#region node_modules/.nitro/vite/services/ssr/assets/verdict-V8xaGJcn.js
