@@ -1,0 +1,326 @@
+/*
+ * Tailwind v4 entry: config lives here, with no tailwind.config.js or PostCSS plugin.
+ * - Keep every @import in this top block, above @theme and the rest of the file. Install an
+ *   npm package before @importing its CSS. Never @import a remote URL (web fonts, CDN CSS): the
+ *   build resolves @import from the filesystem. Load those with a <link> in the head() of
+ *   src/routes/__root.tsx and name the family in a --font-* token in @theme inline below.
+ */
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design system definition.
+ *
+ * The design lives in this file: oklch color tokens on the shadcn variables
+ * (--background, --foreground, --primary, --secondary, --muted, --accent, ...) plus
+ * new tokens as needed, font tokens, and custom styles and animations.
+ *
+ * The @theme inline block maps CSS custom properties to Tailwind utility
+ * classes (e.g. --color-primary -> bg-primary, text-primary).
+ *
+ * The :root and .dark blocks define the actual color values using oklch.
+ * All colors MUST use oklch format.
+ *
+ * To add a new semantic color:
+ * 1. Add the variable to :root (light value) and .dark (dark value)
+ * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-subtle-foreground: var(--subtle-foreground);
+  --color-border-strong: var(--border-strong);
+  --color-destructive-bg: var(--destructive-bg);
+  --color-destructive-border: var(--destructive-border);
+  --color-wrongful: var(--wrongful);
+  --color-wrongful-bg: var(--wrongful-bg);
+  --color-wrongful-border: var(--wrongful-border);
+  --color-contestable: var(--contestable);
+  --color-contestable-bg: var(--contestable-bg);
+  --color-contestable-border: var(--contestable-border);
+  --color-valid: var(--valid);
+  --color-valid-bg: var(--valid-bg);
+  --color-valid-border: var(--valid-border);
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+  --color-info-border: var(--info-border);
+  --color-banner: var(--banner);
+  --color-banner-foreground: var(--banner-foreground);
+  --color-action: var(--action);
+  --color-action-foreground: var(--action-foreground);
+  --color-card-footer: var(--card-footer);
+  --color-wrongful-accent: var(--wrongful-accent);
+  --color-contestable-accent: var(--contestable-accent);
+  --color-valid-accent: var(--valid-accent);
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-serif: "IBM Plex Serif", Georgia, serif;
+  --shadow-card: var(--shadow-card);
+  --shadow-raised: var(--shadow-raised);
+}
+
+:root {
+  --radius: 0.5rem;
+  /* Slate scale (institutional neutral) */
+  --background: oklch(0.972 0.0048 258.3);
+  --foreground: oklch(0.208 0.042 265.755);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.208 0.042 265.755);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.208 0.042 265.755);
+  --primary: oklch(0.208 0.042 265.755);
+  --primary-foreground: oklch(1 0 0);
+  --card-footer: oklch(0.984 0.003 247.858);
+  --action: oklch(0.696 0.17 162.48);
+  --action-foreground: oklch(0.208 0.042 265.755);
+  --wrongful-accent: oklch(0.696 0.17 162.48);
+  --contestable-accent: oklch(0.769 0.188 70.08);
+  --valid-accent: oklch(0.554 0.046 257.417);
+  --secondary: oklch(0.968 0.007 247.896);
+  --secondary-foreground: oklch(0.208 0.042 265.755);
+  --muted: oklch(0.968 0.007 247.896);
+  --muted-foreground: oklch(0.446 0.043 257.281);
+  --subtle-foreground: oklch(0.554 0.046 257.417);
+  --accent: oklch(0.968 0.007 247.896);
+  --accent-foreground: oklch(0.208 0.042 265.755);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.984 0.003 247.858);
+  --destructive-bg: oklch(0.971 0.013 17.38);
+  --destructive-border: oklch(0.885 0.062 18.334);
+  --border: oklch(0.929 0.013 255.508);
+  --border-strong: oklch(0.869 0.022 252.894);
+  --input: oklch(0.869 0.022 252.894);
+  --ring: oklch(0.554 0.046 257.417);
+
+  /* Verdict palette */
+  --wrongful: oklch(0.508 0.118 165.612);
+  --wrongful-bg: oklch(0.979 0.021 166.113);
+  --wrongful-border: oklch(0.905 0.093 164.15);
+  --contestable: oklch(0.555 0.163 48.998);
+  --contestable-bg: oklch(0.987 0.022 95.277);
+  --contestable-border: oklch(0.924 0.12 95.746);
+  --valid: oklch(0.372 0.044 257.287);
+  --valid-bg: oklch(0.968 0.007 247.896);
+  --valid-border: oklch(0.869 0.022 252.894);
+  --info: oklch(0.488 0.243 264.376);
+  --info-bg: oklch(0.97 0.014 254.604);
+  --info-border: oklch(0.882 0.059 254.128);
+
+  /* Banner */
+  --banner: oklch(0.208 0.042 265.755);
+  --banner-foreground: oklch(0.869 0.022 252.894);
+
+  --shadow-card: 0 2px 8px -2px oklch(0.208 0.042 265.755 / 0.06);
+  --shadow-raised: 0 2px 6px oklch(0.208 0.042 265.755 / 0.06), 0 14px 28px -8px oklch(0.208 0.042 265.755 / 0.18);
+
+  --chart-1: oklch(0.508 0.118 165.612);
+  --chart-2: oklch(0.555 0.163 48.998);
+  --chart-3: oklch(0.372 0.044 257.287);
+  --chart-4: oklch(0.488 0.243 264.376);
+  --chart-5: oklch(0.577 0.245 27.325);
+  --sidebar: oklch(0.984 0.003 247.858);
+  --sidebar-foreground: oklch(0.208 0.042 265.755);
+  --sidebar-primary: oklch(0.208 0.042 265.755);
+  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-accent: oklch(0.968 0.007 247.896);
+  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
+  --sidebar-border: oklch(0.929 0.013 255.508);
+  --sidebar-ring: oklch(0.704 0.04 256.788);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "tnum" 0;
+  }
+  h1, h2, h3, h4 {
+    letter-spacing: 0;
+  }
+  /* Every monospaced figure (rupees, dates, counts, %) aligns in columns. */
+  .font-mono {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+@utility surface {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+@utility grid-paper {
+  background-image:
+    linear-gradient(to right, var(--border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse at 40% 20%, var(--foreground) 5%, transparent 75%);
+}
+
+/* ------------------------------------------------------------------
+   Motion. One shared curve, short durations, no bounce.
+   ------------------------------------------------------------------ */
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.82); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fill-x {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes pulse-ring {
+  0% { opacity: 0.45; transform: scale(1); }
+  70%, 100% { opacity: 0; transform: scale(1.5); }
+}
+
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+@utility animate-status {
+  animation: status-pulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+@utility demo-lift {
+  &:hover { transform: translateY(-4px); }
+}
+
+@utility animate-rise {
+  /* `backwards` (not `both`): once the entrance finishes the element returns to
+     the normal cascade, so :hover transforms are not pinned by the animation. */
+  animation: rise-in 240ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+@utility animate-pop {
+  animation: pop-in 240ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+@utility animate-fill {
+  animation: fill-x 700ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+@utility animate-pulse-ring {
+  animation: pulse-ring 1.7s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+/* ------------------------------------------------------------------
+   Interaction. Cards lift a hair and sharpen; controls press crisply.
+   ------------------------------------------------------------------ */
+
+@utility lift {
+  transition-property: transform, border-color, background-color, box-shadow;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  &:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-raised);
+  }
+}
+
+@utility press {
+  transition-property: transform, opacity, background-color, border-color, color, box-shadow;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  &:active { transform: scale(0.985); }
+}
+
+/* ------------------------------------------------------------------
+   Accessibility guard: no motion for those who ask for none.
+   ------------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+  *:hover,
+  *:active {
+    transform: none !important;
+  }
+  html {
+    scroll-behavior: auto !important;
+  }
+}

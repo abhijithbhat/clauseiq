@@ -21,6 +21,7 @@ from backend.app.core.llm_client import (
     reset_case_budget,
 )
 from backend.app.extract.extractor import (
+    build_extraction_prompt,
     compute_continuous_coverage_months,
     extract_case_facts,
     format_documents_for_extraction,
@@ -31,6 +32,7 @@ from backend.app.models.schemas import (
     DocumentPages,
     EvidenceSourceType,
     ExtractedFacts,
+    GrievanceReplyStatus,
     RejectionCategory,
 )
 
@@ -245,3 +247,39 @@ def test_extract_case_facts_with_fixture() -> None:
     assert policy_ev.source_type == EvidenceSourceType.POLICY
     assert policy_ev.page == 1
     assert "14285739/00/00" in policy_ev.quote
+
+
+def test_grievance_reply_status_extraction_prompt_and_default() -> None:
+    """Ensure extractor defaults grievance_reply_status to UNKNOWN and leaves 14-day/1-month rules to R9."""
+    prompt = build_extraction_prompt("[DOC: REJECTION_LETTER | FILENAME: rejection.pdf | PAGE: 1]\nSample")
+    grievance_block = prompt.split("`grievance_reply_status`:", 1)[1].split("8. Missing Facts:", 1)[0]
+
+    assert 'Default to "UNKNOWN"' in grievance_block
+    assert "EXPLICITLY states" in grievance_block
+    assert '"REPLY_RECEIVED"' in grievance_block
+    assert '"AWAITING_REPLY"' in grievance_block
+    assert '"CONFIRMED_NO_RESPONSE"' in grievance_block
+    assert "R9 rule engine" in grievance_block
+    assert "Never infer" in grievance_block
+    assert "30 days passed" not in grievance_block
+    assert "30-day window is ongoing" not in grievance_block
+
+    # Even with an older grievance_received_date and no reply doc, post-processing must not infer CONFIRMED_NO_RESPONSE
+    mock_facts = ExtractedFacts(
+        grievance_sent_date="20/06/2024",
+        grievance_received_date="22/06/2024",
+    )
+    doc = DocumentPages(
+        case_id="case_r9_01",
+        kind=DocumentKind.REJECTION_LETTER,
+        filename="rejection.pdf",
+        pages=1,
+        text_by_page={1: "Grievance submitted on 20/06/2024, acknowledged on 22/06/2024."},
+        ocr_used=False,
+    )
+    with patch("backend.app.extract.extractor.generate_json", return_value=mock_facts):
+        facts, _ = extract_case_facts(case_id="case_r9_01", documents=[doc])
+
+    assert facts.grievance_sent_date == "2024-06-20"
+    assert facts.grievance_received_date == "2024-06-22"
+    assert facts.grievance_reply_status == GrievanceReplyStatus.UNKNOWN

@@ -188,7 +188,11 @@ EXTRACTION INSTRUCTIONS (SECTIONS 8, 10 & 12):
    - `documents_requested_list`: list of specific missing documents requested.
    - `grievance_sent_date`: date grievance letter was sent to GRO (YYYY-MM-DD), or null if not yet sent.
    - `grievance_received_date`: date insurer received the grievance representation (YYYY-MM-DD) per Rule 14 of Ombudsman Rules 2017.
-   - `grievance_reply_status`: "REPLY_RECEIVED" if insurer replied to grievance, "AWAITING_REPLY" if grievance was sent and 30-day window is ongoing, "CONFIRMED_NO_RESPONSE" if 30 days passed with no reply, or "UNKNOWN" if no grievance was filed or status is unstated. Default to "UNKNOWN".
+   - `grievance_reply_status`: Default to "UNKNOWN" unless uploaded document text EXPLICITLY states:
+     * "REPLY_RECEIVED": text explicitly states that a grievance reply was received from the insurer (also extract `grievance_reply_received_date` if stated).
+     * "AWAITING_REPLY": text explicitly states that a grievance representation is currently pending reply from the insurer.
+     * "CONFIRMED_NO_RESPONSE": text explicitly states or confirms with a supporting record that the insurer failed to respond.
+     Never infer "CONFIRMED_NO_RESPONSE" from elapsed time or the absence of a reply document, and do NOT calculate 14-day TAT or 1-calendar-month Ombudsman deadlines (those belong strictly to the deterministic R9 rule engine).
 8. Missing Facts:
    - If any fact is absent from the documents, return null. Do NOT assume or invent facts.
 9. Rejection reason:

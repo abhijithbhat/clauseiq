@@ -9,6 +9,8 @@ from fastapi.testclient import TestClient
 import fitz  # PyMuPDF
 import pytest
 
+from backend.app.core.config import settings
+from backend.app.core.errors import RateLimitError
 from backend.app.main import app
 from backend.app.models.db import (
     delete_case_completely,
@@ -460,6 +462,121 @@ def test_analyze_pipeline_end_to_end() -> None:
     prog_data = prog_res.json()
     assert prog_data["status"] == "COMPLETED"
     assert all(s["status"] == "done" for s in prog_data["steps"])
+
+    delete_case_completely(case_id)
+
+
+def test_cors_allows_frontend_dev_origins() -> None:
+    """Verify CORS allows both Lovable/Vite port 8080 and standard Vite port 5173."""
+    assert "http://localhost:8080" in settings.cors_origin_list
+    assert "http://localhost:5173" in settings.cors_origin_list
+
+    for origin in ("http://localhost:8080", "http://localhost:5173"):
+        res = client.options(
+            "/cases",
+            headers={
+                "Origin": origin,
+                "Access-Control-Request-Method": "POST",
+                "Access-Control-Request-Headers": "Content-Type",
+            },
+        )
+        assert res.status_code == 200
+        assert res.headers.get("access-control-allow-origin") == origin
+
+
+def test_analyze_accepts_optional_manual_dates_and_tuple_extraction() -> None:
+    """Verify POST /cases/{id}/analyze accepts optional manual dates and tuple output from extractor."""
+    case_id = "test_case_manual_dates_01"
+    delete_case_completely(case_id)
+    client.post("/cases", json={"consent_given": True, "case_id": case_id})
+
+    policy_pdf = _create_sample_pdf(
+        "Care Health Insurance Limited\nClause 4.1 Pre-Existing Disease Waiting Period 36 months.\n"
+    )
+    client.post(
+        f"/cases/{case_id}/documents",
+        files={"file": ("policy.pdf", policy_pdf, "application/pdf")},
+        data={"kind": "POLICY"},
+    )
+
+    mock_facts = ExtractedFacts(
+        insurer_name="Care Health Insurance Limited",
+        claim_amount_inr=120000.0,
+        rejection_category=RejectionCategory.PED,
+        ped_waiting_period_months=36,
+    )
+    extracted_ev = [
+        Evidence(
+            id="ev_extract_01",
+            case_id=case_id,
+            source_type=EvidenceSourceType.POLICY,
+            source_ref="Clause 4.1",
+            quote="Pre-Existing Disease Waiting Period 36 months",
+            page=1,
+            verified=False,
+        )
+    ]
+    mock_verdict = Verdict(
+        case_id=case_id,
+        label=VerdictLabel.LIKELY_WRONGFUL,
+        summary="",
+        confidence=0.9,
+        needs_human_review=False,
+        reasons=["ev_extract_01"],
+    )
+
+    # Invalid manual date returns standardized error
+    bad_res = client.post(
+        f"/cases/{case_id}/analyze",
+        json={"first_inception_date": "99/99/2020"},
+    )
+    assert bad_res.status_code == 400
+    assert bad_res.json()["code"] == "INVALID_DATE"
+
+    with (
+        patch("backend.app.api.cases.extract_case_facts", return_value=(mock_facts, extracted_ev)),
+        patch("backend.app.api.cases.decide_verdict", return_value=mock_verdict) as mock_decide,
+        patch("backend.app.api.cases.evaluate_deadlines", return_value=[], create=True),
+    ):
+        res = client.post(
+            f"/cases/{case_id}/analyze",
+            json={
+                "first_inception_date": "2020-04-15",
+                "admission_date": "2024-05-20",
+            },
+        )
+
+    assert res.status_code == 200
+    analysis = res.json()
+    assert analysis["facts"]["policy_first_inception_date"] == "2020-04-15"
+    assert analysis["facts"]["admission_date"] == "2024-05-20"
+    assert analysis["facts"]["continuous_coverage_months"] == 49
+    assert mock_decide.call_args.kwargs["facts"].continuous_coverage_months == 49
+    assert any(ev["id"] == "ev_extract_01" and ev["verified"] is True for ev in analysis["evidence"])
+
+    delete_case_completely(case_id)
+
+
+def test_analyze_preserves_rate_limit_429() -> None:
+    """Verify RateLimitError propagates as HTTP 429 with {code, message, hint}."""
+    case_id = "test_case_rate_limit_01"
+    delete_case_completely(case_id)
+    client.post("/cases", json={"consent_given": True, "case_id": case_id})
+
+    pdf_bytes = _create_sample_pdf("Policy text content for rate limit test.")
+    client.post(
+        f"/cases/{case_id}/documents",
+        files={"file": ("policy.pdf", pdf_bytes, "application/pdf")},
+        data={"kind": "POLICY"},
+    )
+
+    with patch("backend.app.api.cases.extract_case_facts", side_effect=RateLimitError()):
+        res = client.post(f"/cases/{case_id}/analyze", json={})
+
+    assert res.status_code == 429
+    body = res.json()
+    assert body["code"] == "AI_RATE_LIMIT"
+    assert "message" in body and "hint" in body
 
     delete_case_completely(case_id)
 

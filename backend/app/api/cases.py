@@ -9,7 +9,7 @@ Implements Section 5, Section 9, Section 11, and FR13:
 - Guarantees standardized {code, message, hint} error format across all endpoints.
 """
 
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 import json
 import logging
 from pathlib import Path
@@ -17,12 +17,16 @@ import tempfile
 from typing import Any, Dict, List, Optional
 import uuid
 
-from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile, status
+from fastapi import APIRouter, Body, File, Form, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel, Field
 
 from backend.app.core.config import settings
 from backend.app.core.errors import ClauseIQException, IngestError
-from backend.app.extract.extractor import extract_case_facts
+from backend.app.extract.extractor import (
+    compute_continuous_coverage_months,
+    extract_case_facts,
+    normalize_indian_date,
+)
 from backend.app.ingest.chunker import chunk_policy_document
 from backend.app.ingest.pdf import parse_document
 from backend.app.models.db import (
@@ -126,6 +130,40 @@ class DeleteCaseResponse(BaseModel):
     """Response on case purge."""
     deleted: bool
     case_id: str
+
+
+class AnalyzeCaseRequest(BaseModel):
+    """Optional manual fact inputs supplied alongside analysis trigger."""
+    first_inception_date: Optional[str] = Field(
+        default=None,
+        description="Optional policy first inception date (YYYY-MM-DD or DD/MM/YYYY).",
+    )
+    policy_first_inception_date: Optional[str] = Field(
+        default=None,
+        description="Alias for first_inception_date.",
+    )
+    admission_date: Optional[str] = Field(
+        default=None,
+        description="Optional hospital admission date (YYYY-MM-DD or DD/MM/YYYY).",
+    )
+
+
+def _parse_optional_date(raw_date: Optional[str], field_name: str) -> Optional[str]:
+    """Normalize an optional ISO/Indian date string to ISO YYYY-MM-DD."""
+    if raw_date is None or not raw_date.strip():
+        return None
+    normalized = normalize_indian_date(raw_date)
+    if not normalized:
+        return None
+    try:
+        date.fromisoformat(normalized)
+    except ValueError as e:
+        raise ClauseIQException(
+            code="INVALID_DATE",
+            message=f"Invalid date for '{field_name}': '{raw_date}'.",
+            hint="Provide dates in YYYY-MM-DD or DD/MM/YYYY format.",
+        ) from e
+    return normalized
 
 
 # ==============================================================================
@@ -344,7 +382,10 @@ def get_case_progress(case_id: str) -> ProgressResponse:
 
 
 @router.post("/{case_id}/analyze", response_model=AnalysisResult)
-def analyze_case(case_id: str) -> AnalysisResult:
+def analyze_case(
+    case_id: str,
+    payload: Optional[AnalyzeCaseRequest] = Body(default=None),
+) -> AnalysisResult:
     """Orchestrate end-to-end claim analysis pipeline across all 6 stages."""
     case = get_case(case_id)
     if not case:
@@ -353,6 +394,20 @@ def analyze_case(case_id: str) -> AnalysisResult:
             message=f"Case '{case_id}' was not found.",
             hint="Please verify the case ID.",
         )
+
+    manual_inception = (
+        _parse_optional_date(
+            payload.policy_first_inception_date or payload.first_inception_date,
+            "first_inception_date",
+        )
+        if payload
+        else None
+    )
+    manual_admission = (
+        _parse_optional_date(payload.admission_date, "admission_date")
+        if payload
+        else None
+    )
 
     # Stage 1: Reading documents
     _set_step(case_id, "Reading documents", "running", overall_status="ANALYZING")
@@ -381,10 +436,34 @@ def analyze_case(case_id: str) -> AnalysisResult:
     # Stage 2: Finding key facts
     _set_step(case_id, "Finding key facts", "running")
     facts: ExtractedFacts
+    extracted_evidence: List[Evidence] = []
     try:
-        facts = extract_case_facts(documents=documents, case_id=case_id)
+        extracted_out = extract_case_facts(documents=documents, case_id=case_id)
+        if isinstance(extracted_out, tuple):
+            facts, extracted_evidence = extracted_out
+        else:
+            facts = extracted_out
+
+        dates_updated = False
+        if manual_inception:
+            facts.policy_first_inception_date = manual_inception
+            dates_updated = True
+        if manual_admission:
+            facts.admission_date = manual_admission
+            dates_updated = True
+
+        if dates_updated and facts.policy_first_inception_date and facts.admission_date:
+            facts.continuous_coverage_months = compute_continuous_coverage_months(
+                first_inception=facts.policy_first_inception_date,
+                admission=facts.admission_date,
+                portability_months=facts.portability_continuity_months,
+            )
+
         save_case_facts(case_id=case_id, facts=facts)
         _set_step(case_id, "Finding key facts", "done")
+    except ClauseIQException:
+        _set_step(case_id, "Finding key facts", "failed", overall_status="FAILED")
+        raise
     except Exception as e:
         logger.exception("Fact extraction failed for case %s: %s", case_id, e)
         _set_step(case_id, "Finding key facts", "failed", overall_status="FAILED")
@@ -397,7 +476,7 @@ def analyze_case(case_id: str) -> AnalysisResult:
     # Stage 3: Locating clauses
     _set_step(case_id, "Locating clauses", "running")
     policy_chunks = get_case_chunks(case_id)
-    verified_evidence: List[Evidence] = []
+    verified_evidence: List[Evidence] = list(extracted_evidence)
     try:
         if policy_chunks:
             retriever = HybridRetriever(policy_chunks=policy_chunks)
@@ -459,6 +538,7 @@ def analyze_case(case_id: str) -> AnalysisResult:
     # Stage 6: Writing explanation
     _set_step(case_id, "Writing explanation", "running")
     if decide_verdict is None:
+        _set_step(case_id, "Writing explanation", "failed", overall_status="FAILED")
         raise ClauseIQException(
             code="DECIDER_UNAVAILABLE",
             message="Verdict decider module is not available in this environment.",
