@@ -68,9 +68,12 @@ except ImportError:
     decide_verdict = None
 
 try:
-    from backend.app.rules.engine import evaluate_rules  # type: ignore
+    from backend.app.rules.engine import run_all_rules  # type: ignore
 except ImportError:
-    evaluate_rules = None
+    try:
+        from backend.app.rules.engine import evaluate_rules as run_all_rules  # type: ignore
+    except ImportError:
+        run_all_rules = None
 
 try:
     from backend.app.rules.r9_deadlines import (  # type: ignore
@@ -181,15 +184,29 @@ def _set_step(case_id: str, step_name: str, step_status: str, overall_status: Op
     )
 
 
-def _evaluate_rules_fallback(facts: ExtractedFacts) -> List[RuleResult]:
+def _evaluate_rules_fallback(
+    facts: ExtractedFacts,
+    evidence: Optional[List[Evidence]] = None,
+) -> List[RuleResult]:
     """Graceful deterministic fallback evaluation for rules R1, R2, R6, R8.
     
     Used when teammate's Module M5 (rules engine) is not yet integrated.
     """
     results: List[RuleResult] = []
+    ev_list = evidence or []
+
+    def find_ev_ids(*keywords: str) -> List[str]:
+        kw_lower = [k.lower() for k in keywords if k]
+        matched: List[str] = []
+        for ev in ev_list:
+            text = f"{ev.source_ref} {ev.quote}".lower()
+            if any(k in text for k in kw_lower):
+                matched.append(ev.id)
+        return matched
 
     # R1: PED waiting period check
     if facts.continuous_coverage_months is not None and facts.ped_waiting_period_months is not None:
+        r1_ev_ids = find_ev_ids("clause 4.1", "waiting", "pre-existing", facts.cited_clause_ref or "")
         if facts.continuous_coverage_months >= facts.ped_waiting_period_months:
             results.append(
                 RuleResult(
@@ -206,6 +223,7 @@ def _evaluate_rules_fallback(facts: ExtractedFacts) -> List[RuleResult]:
                         f"policy PED waiting period of {facts.ped_waiting_period_months} months."
                     ),
                     law_ref="IRDAI Master Circular 2024 Clause 4.1",
+                    supporting_evidence_ids=r1_ev_ids,
                 )
             )
         else:
@@ -221,11 +239,13 @@ def _evaluate_rules_fallback(facts: ExtractedFacts) -> List[RuleResult]:
                     },
                     explanation="Continuous coverage has not completed the specified PED waiting period.",
                     law_ref="IRDAI Master Circular 2024 Clause 4.1",
+                    supporting_evidence_ids=r1_ev_ids,
                 )
             )
 
     # R2: Section 45 Moratorium Period (60 months)
     if facts.continuous_coverage_months is not None:
+        r2_ev_ids = find_ev_ids("moratorium", "section 45", "continuous", "non-disclosure")
         if facts.continuous_coverage_months >= 60 and not facts.fraud_established:
             results.append(
                 RuleResult(
@@ -242,11 +262,13 @@ def _evaluate_rules_fallback(facts: ExtractedFacts) -> List[RuleResult]:
                         "moratorium ceiling under Section 45 of Insurance Act, 1938. Claim cannot be repudiated for non-disclosure."
                     ),
                     law_ref="Insurance Act 1938 Section 45",
+                    supporting_evidence_ids=r2_ev_ids,
                 )
             )
 
     # R6: Room Rent Proportionate Deductions
     if facts.has_room_rent_proportionate_clause and facts.room_rent_deduction_inr:
+        r6_ev_ids = find_ev_ids("room", "rent", "proportionate")
         if facts.non_associated_charges_inr and facts.non_associated_charges_inr > 0:
             results.append(
                 RuleResult(
@@ -257,6 +279,7 @@ def _evaluate_rules_fallback(facts: ExtractedFacts) -> List[RuleResult]:
                     inputs={"room_rent_deduction_inr": facts.room_rent_deduction_inr},
                     explanation="Proportionate deductions cannot be applied to non-associated medical expenses like medicines and implants.",
                     law_ref="IRDAI Circular Ref: IRDAI/HLT/REG/CIR/194/07/2020",
+                    supporting_evidence_ids=r6_ev_ids,
                 )
             )
 
@@ -499,14 +522,43 @@ def analyze_case(
     _set_step(case_id, "Checking rules", "running")
     rule_results: List[RuleResult] = []
     deadlines: List[Deadline] = []
-    if evaluate_rules is not None:
-        rules_out = evaluate_rules(facts=facts, chunks=policy_chunks)
+    if run_all_rules is not None:
+        try:
+            import inspect
+
+            sig = inspect.signature(run_all_rules)
+            call_kwargs: Dict[str, Any] = {}
+            params = sig.parameters
+            has_var_keyword = any(p.kind == inspect.Parameter.VAR_KEYWORD for p in params.values())
+
+            if "case_id" in params or has_var_keyword:
+                call_kwargs["case_id"] = case_id
+            if "facts" in params or has_var_keyword:
+                call_kwargs["facts"] = facts
+            if "evidence" in params or "verified_evidence" in params or has_var_keyword:
+                call_kwargs["evidence" if "evidence" in params or "verified_evidence" not in params else "verified_evidence"] = verified_evidence
+            if "chunks" in params or "policy_chunks" in params or has_var_keyword:
+                call_kwargs["chunks" if "chunks" in params or "policy_chunks" not in params else "policy_chunks"] = policy_chunks
+
+            if call_kwargs:
+                rules_out = run_all_rules(**call_kwargs)
+            else:
+                rules_out = run_all_rules(case_id, facts, evidence=verified_evidence, chunks=policy_chunks)
+        except TypeError:
+            try:
+                rules_out = run_all_rules(case_id, facts, evidence=verified_evidence)
+            except TypeError:
+                try:
+                    rules_out = run_all_rules(case_id, facts)
+                except TypeError:
+                    rules_out = run_all_rules(facts=facts, chunks=policy_chunks)
+
         if isinstance(rules_out, tuple) and len(rules_out) == 2 and isinstance(rules_out[1], list):
             rule_results, deadlines = rules_out
         else:
             rule_results = rules_out
     else:
-        rule_results = _evaluate_rules_fallback(facts)
+        rule_results = _evaluate_rules_fallback(facts, evidence=verified_evidence)
 
     if not deadlines:
         deadlines_eval_fn = evaluate_deadlines or evaluate_r9_deadlines

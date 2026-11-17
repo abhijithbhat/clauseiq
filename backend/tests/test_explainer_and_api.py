@@ -580,3 +580,70 @@ def test_analyze_preserves_rate_limit_429() -> None:
 
     delete_case_completely(case_id)
 
+
+def test_analyze_executes_run_all_rules_and_preserves_evidence_ids() -> None:
+    """Verify that cases.py dynamically calls run_all_rules(case_id, facts, evidence) and preserves supporting_evidence_ids."""
+    case_id = "test_case_run_all_rules_01"
+    delete_case_completely(case_id)
+    client.post("/cases", json={"consent_given": True, "case_id": case_id})
+
+    pdf_bytes = _create_sample_pdf("Clause 4.1 PED waiting period 36 months.")
+    client.post(
+        f"/cases/{case_id}/documents",
+        files={"file": ("policy.pdf", pdf_bytes, "application/pdf")},
+        data={"kind": "POLICY"},
+    )
+
+    mock_facts = ExtractedFacts(
+        continuous_coverage_months=49,
+        ped_waiting_period_months=36,
+        claim_amount_inr=120000.0,
+    )
+    mock_rules = [
+        RuleResult(
+            case_id=case_id,
+            rule_id="R1",
+            name="PED Waiting Period",
+            outcome=RuleOutcome.CONTRADICTS_INSURER,
+            inputs={"continuous_coverage_months": 49},
+            explanation="Waiting period completed.",
+            supporting_evidence_ids=["ev_mock_ped_01"],
+        ),
+    ]
+    mock_verdict = Verdict(
+        case_id=case_id,
+        label=VerdictLabel.LIKELY_WRONGFUL,
+        summary="Claim wrongly rejected.",
+        confidence=0.95,
+        needs_human_review=False,
+        reasons=["ev_mock_ped_01"],
+    )
+
+    called_kwargs = {}
+
+    def fake_run_all_rules(case_id, facts, evidence=None, chunks=None):
+        called_kwargs["case_id"] = case_id
+        called_kwargs["facts"] = facts
+        called_kwargs["evidence"] = evidence
+        called_kwargs["chunks"] = chunks
+        return mock_rules
+
+    with (
+        patch("backend.app.api.cases.extract_case_facts", return_value=mock_facts),
+        patch("backend.app.api.cases.run_all_rules", side_effect=fake_run_all_rules),
+        patch("backend.app.api.cases.decide_verdict", return_value=mock_verdict) as mock_decide,
+    ):
+        res = client.post(f"/cases/{case_id}/analyze")
+
+    assert res.status_code == 200
+    assert called_kwargs["case_id"] == case_id
+    assert called_kwargs["facts"] == mock_facts
+    assert isinstance(called_kwargs["evidence"], list)
+    assert mock_decide.call_args.kwargs["rules"] == mock_rules
+
+    data = res.json()
+    assert data["rules"][0]["rule_id"] == "R1"
+    assert data["rules"][0]["supporting_evidence_ids"] == ["ev_mock_ped_01"]
+
+    delete_case_completely(case_id)
+
