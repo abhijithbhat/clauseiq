@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-11-21T07:06:55.778766+00:00",
+  "total_cases_evaluated": 3,
+  "overall_metrics": {
+    "citation_validity_percent": 100.0,
+    "rule_outcome_accuracy_percent": 100.0,
+    "verdict_agreement_percent": 100.0,
+    "false_likely_wrongful_rate_percent": 0.0
+  },
+  "cases": [
+    {
+      "case_id": "case_01",
+      "citation_validity": 1.0,
+      "valid_quotes": 2,
+      "total_quotes": 2,
+      "rule_accuracy": 1.0,
+      "rule_matches": 1,
+      "total_rules": 1,
+      "expected_verdict": "LIKELY_WRONGFUL",
+      "actual_verdict": "LIKELY_WRONGFUL",
+      "verdict_match": true,
+      "is_false_wrongful": false
+    },
+    {
+      "case_id": "case_02",
+      "citation_validity": 1.0,
+      "valid_quotes": 2,
+      "total_quotes": 2,
+      "rule_accuracy": 1.0,
+      "rule_matches": 1,
+      "total_rules": 1,
+      "expected_verdict": "LIKELY_WRONGFUL",
+      "actual_verdict": "LIKELY_WRONGFUL",
+      "verdict_match": true,
+      "is_false_wrongful": false
+    },
+    {
+      "case_id": "case_03",
+      "citation_validity": 1.0,
+      "valid_quotes": 2,
+      "total_quotes": 2,
+      "rule_accuracy": 1.0,
+      "rule_matches": 1,
+      "total_rules": 1,
+      "expected_verdict": "LIKELY_VALID",
+      "actual_verdict": "LIKELY_VALID",
+      "verdict_match": true,
+      "is_false_wrongful": false
+    }
+  ]
+}
