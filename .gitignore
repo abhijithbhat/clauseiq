@@ -67,3 +67,7 @@ clauseiq.db
 /uploads/
 /data/uploads/
 data/uploads/
+
+# Frontend build & Cloudflare artifacts
+frontend/.output/
+frontend/.wrangler/
