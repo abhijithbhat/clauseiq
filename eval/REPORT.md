@@ -1,6 +1,6 @@
 # ClauseIQ Gold-Set Evaluation Report
 
-**Generated:** 2026-11-21T07:06:55.778766+00:00  
+**Generated:** 2026-11-21T07:10:14.783722+00:00  
 **Evaluated Cases:** 3  
 
 ## Summary Metrics
