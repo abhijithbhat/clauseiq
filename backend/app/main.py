@@ -15,6 +15,7 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from backend.app.api.cases import router as cases_router
+from backend.app.api.results_and_letters import router as results_router
 from backend.app.core.config import settings
 from backend.app.core.errors import ClauseIQException
 from backend.app.models.db import init_db
@@ -39,6 +40,7 @@ app.add_middleware(
 
 # Include API routers
 app.include_router(cases_router)
+app.include_router(results_router)
 
 
 # ==============================================================================
@@ -49,7 +51,7 @@ app.include_router(cases_router)
 async def handle_clauseiq_exception(request: Request, exc: ClauseIQException) -> JSONResponse:
     """Format custom ClauseIQ exceptions into standardized {code, message, hint} payload."""
     status_code = status.HTTP_400_BAD_REQUEST
-    if exc.code == "CASE_NOT_FOUND":
+    if exc.code in ("CASE_NOT_FOUND", "DEMO_CASE_NOT_FOUND", "NOT_FOUND"):
         status_code = status.HTTP_404_NOT_FOUND
     elif exc.code == "AI_RATE_LIMIT":
         status_code = status.HTTP_429_TOO_MANY_REQUESTS

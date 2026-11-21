@@ -60,6 +60,7 @@ class CaseRecord(Base):
     chunks_json = Column(Text, nullable=True)
     evidence_json = Column(Text, nullable=True)
     analysis_result_json = Column(Text, nullable=True)
+    letter_json = Column(Text, nullable=True)
 
     documents = relationship("DocumentRecord", back_populates="case", cascade="all, delete-orphan")
 
@@ -94,6 +95,13 @@ def init_db(target_engine=None) -> None:
     """Initialize database tables."""
     eng = target_engine or engine
     Base.metadata.create_all(bind=eng)
+    with eng.connect() as conn:
+        try:
+            from sqlalchemy import text
+            conn.execute(text("ALTER TABLE cases ADD COLUMN letter_json TEXT"))
+            conn.commit()
+        except Exception:
+            pass
 
 
 def get_db() -> Generator[Session, None, None]:
@@ -268,4 +276,23 @@ def delete_case_completely(case_id: str) -> bool:
         db.delete(case)
         db.commit()
         return True
+
+
+def save_case_letter(case_id: str, letter_data: Dict[str, Any]) -> None:
+    """Store generated appeal letter data in the case record."""
+    with SessionLocal() as db:
+        case = db.query(CaseRecord).filter(CaseRecord.id == case_id).first()
+        if not case:
+            return
+        case.letter_json = json.dumps(letter_data)
+        db.commit()
+
+
+def get_case_letter(case_id: str) -> Optional[Dict[str, Any]]:
+    """Retrieve stored appeal letter data for a case."""
+    with SessionLocal() as db:
+        case = db.query(CaseRecord).filter(CaseRecord.id == case_id).first()
+        if not case or not case.letter_json:
+            return None
+        return json.loads(case.letter_json)
 

@@ -560,14 +560,16 @@ def analyze_case(
     else:
         rule_results = _evaluate_rules_fallback(facts, evidence=verified_evidence)
 
-    if not deadlines:
-        deadlines_eval_fn = evaluate_deadlines or evaluate_r9_deadlines
-        if deadlines_eval_fn is not None:
-            try:
-                deadlines = deadlines_eval_fn(case_id=case_id, facts=facts)
-            except Exception as e:
-                logger.warning("R9 deadline evaluation encountered error: %s", e)
-                deadlines = []
+    if evaluate_deadlines is not None:
+        try:
+            deadlines = evaluate_deadlines(case_id=case_id, facts=facts)
+        except Exception as e:
+            logger.warning("evaluate_deadlines encountered error: %s", e)
+    elif not deadlines and evaluate_r9_deadlines is not None:
+        try:
+            deadlines = evaluate_r9_deadlines(case_id=case_id, facts=facts)
+        except Exception as e:
+            logger.warning("evaluate_r9_deadlines encountered error: %s", e)
 
     _set_step(case_id, "Checking rules", "done")
 

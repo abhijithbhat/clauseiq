@@ -49,6 +49,8 @@ yarn-error.log*
 .pnpm-debug.log*
 .vite/
 frontend/dist/
+.output/
+.wrangler/
 
 # OS and Editor
 .DS_Store

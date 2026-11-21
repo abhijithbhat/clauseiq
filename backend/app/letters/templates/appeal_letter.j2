@@ -1,0 +1,52 @@
+To,
+The Grievance Redressal Officer,
+{{ insurer_name or '[[insurer_name]]' }}
+{{ insurer_address or 'Corporate / Claims Department' }}
+
+Date: {{ letter_date }}
+
+SUBJECT: Representation / Appeal against Repudiation of Claim No. {{ claim_number or '[[claim_number]]' }} under Policy No. {{ policy_number or '[[policy_number]]' }} (Disallowed Amount: ₹{{ disallowed_amount or '[[disallowed_amount]]' }})
+
+Dear Sir / Madam,
+
+1. SENDER & POLICY DETAILS
+I, {{ insured_name or '[[insured_name]]' }}, am the insured under Health Insurance Policy No. {{ policy_number or '[[policy_number]]' }} issued by {{ insurer_name or '[[insurer_name]]' }}. The policy was initially incepted on {{ first_inception_date or '[[first_inception_date]]' }} and has been continuously maintained without break.
+
+2. FACTUAL BACKGROUND
+- Patient Name: {{ patient_name or '[[patient_name]]' }}
+- Hospital: {{ hospital_name or '[[hospital_name]]' }}
+- Date of Admission: {{ admission_date or '[[admission_date]]' }}
+- Date of Discharge: {{ discharge_date or '[[discharge_date]]' }}
+- Diagnosis / Treatment: {{ diagnosis_and_treatment or '[[diagnosis_and_treatment]]' }}
+- Total Claim Amount: ₹{{ claim_amount or '[[claim_amount]]' }}
+- Amount Settled: ₹{{ settled_amount or '0' }}
+- Amount Disallowed / Repudiated: ₹{{ disallowed_amount or '[[disallowed_amount]]' }}
+- Date of Repudiation Notice: {{ repudiation_date or '[[rejection_date]]' }}
+- Insurer's Stated Ground: "{{ rejection_reason or '[[rejection_reason_text]]' }}" (citing {{ cited_clause or 'policy terms' }})
+
+3. NUMBERED GROUNDS FOR APPEAL & RECONSIDERATION
+{% for ground in grounds %}
+{{ loop.index }}. {{ ground }}
+{% endfor %}
+
+4. REQUEST FOR RECONSIDERATION
+In light of the binding regulatory protections, policy wording, and medical facts detailed above, the repudiation / deduction of ₹{{ disallowed_amount or '[[disallowed_amount]]' }} is untenable. I respectfully request that you:
+(a) Reconsider and recall the repudiation letter dated {{ repudiation_date or '[[rejection_date]]' }};
+(b) Process and disburse the admissible claim amount of ₹{{ disallowed_amount or '[[disallowed_amount]]' }} directly to my bank account; and
+(c) Provide a formal written response within the statutory 14-day turnaround time prescribed by the IRDAI Master Circular on Protection of Policyholders' Interests, 2024.
+
+5. ENCLOSURE CHECKLIST
+{% for enc in enclosures %}
+- [X] {{ enc }}
+{% endfor %}
+
+Yours faithfully,
+
+
+____________________________
+{{ insured_name or '[[insured_name]]' }}
+Address: {{ sender_address or '[[sender_address]]' }}
+Contact / Email: {{ sender_contact or '[[sender_contact]]' }}
+
+--------------------------------------------------------------------------------
+Drafted with ClauseIQ, an assistive tool. This is not legal advice. Please review before sending.
