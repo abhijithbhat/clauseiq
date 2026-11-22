@@ -33,6 +33,16 @@ function Index() {
   const router = useRouter();
   const { reset } = a;
 
+  // Clicking the ClauseIQ logo or navigating to home resets back to intake
+  useEffect(() => {
+    const handleHomeClick = () => {
+      reset();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+    window.addEventListener("clauseiq:reset-home", handleHomeClick);
+    return () => window.removeEventListener("clauseiq:reset-home", handleHomeClick);
+  }, [reset]);
+
   // "Try a Demo Case" in the header should always return to the demo picker.
   useEffect(
     () =>
@@ -43,6 +53,8 @@ function Index() {
             () => document.getElementById("demo-cases")?.scrollIntoView({ behavior: "smooth" }),
             50,
           );
+        } else if (toLocation.pathname === "/" && !toLocation.hash) {
+          reset();
         }
       }),
     [router, reset],

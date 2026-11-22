@@ -283,3 +283,41 @@ def test_grievance_reply_status_extraction_prompt_and_default() -> None:
     assert facts.grievance_sent_date == "2024-06-20"
     assert facts.grievance_received_date == "2024-06-22"
     assert facts.grievance_reply_status == GrievanceReplyStatus.UNKNOWN
+
+
+def test_generate_json_strips_markdown_and_filters_extra_keys() -> None:
+    """Verify generate_json handles markdown formatting and filters unknown extra fields without crashing."""
+    raw_payload_with_fences_and_extra = """
+    ```json
+    {
+      "summary": "Marseille",
+      "count": 42,
+      "unmodeled_stray_field": "some extra value",
+      "reasoning": "thought process"
+    }
+    ```
+    """
+    with patch("backend.app.core.llm_client.get_cached_response", return_value=None):
+        with patch("backend.app.core.llm_client._get_genai_client") as mock_client_factory:
+            mock_client = MagicMock()
+            mock_resp = MagicMock()
+            mock_resp.text = raw_payload_with_fences_and_extra
+            mock_client.models.generate_content.return_value = mock_resp
+            mock_client_factory.return_value = mock_client
+
+            res = generate_json(
+                prompt="Tell me about Marseille",
+                schema=DummySchema,
+                model="test-gemini",
+                case_id="case_extra_test",
+            )
+
+            # Must correctly parse despite markdown fences and extra fields
+            assert res.summary == "Marseille"
+            assert res.count == 42
+            # Verify GenerateContentConfig did not pass response_schema (which triggers 400 in Developer API)
+            call_kwargs = mock_client.models.generate_content.call_args[1]
+            config = call_kwargs["config"]
+            assert config.response_schema is None
+            assert config.response_mime_type == "application/json"
+

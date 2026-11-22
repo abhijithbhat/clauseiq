@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Info, Scale, ShieldCheck } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
-import { useBackendStatus } from "@/lib/clauseiq/use-backend-status";
 import { cn } from "@/lib/utils";
 
 export const DISCLAIMER_TEXT =
@@ -34,37 +33,6 @@ function DisclaimerBar() {
   );
 }
 
-function StatusBadge() {
-  const { checking, online, refresh } = useBackendStatus();
-  return (
-    <button
-      type="button"
-      onClick={() => refresh()}
-      title="Click to re-check the analysis service"
-      className={cn(
-        "press inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[11px]",
-        checking && "border-border bg-card text-muted-foreground",
-        !checking && online && "border-wrongful-border bg-wrongful-bg text-wrongful",
-        !checking && !online && "border-contestable-border bg-contestable-bg text-contestable",
-      )}
-    >
-      <span className="relative flex size-1.5">
-        {!checking && online && (
-          <span className="absolute inline-flex size-full animate-ping rounded-full bg-wrongful opacity-60" />
-        )}
-        <span
-          className={cn(
-            "relative inline-flex size-1.5 rounded-full",
-            !checking && "animate-status",
-            checking ? "bg-subtle-foreground" : online ? "bg-wrongful" : "bg-contestable",
-          )}
-        />
-      </span>
-      {checking ? "Checking backend…" : online ? "Backend: Connected" : "Demo Offline Mode"}
-    </button>
-  );
-}
-
 function Masthead({ scrolled }: { scrolled: boolean }) {
   const nav =
     "text-[13px] text-muted-foreground transition-colors duration-200 ease-out hover:text-foreground";
@@ -77,7 +45,15 @@ function Masthead({ scrolled }: { scrolled: boolean }) {
     >
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-3.5 sm:px-6">
         <div className="flex flex-wrap items-center gap-3">
-          <Link to="/" className="press flex items-center gap-2.5">
+          <Link
+            to="/"
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent("clauseiq:reset-home"));
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="press flex items-center gap-2.5"
+            title="Return to homepage"
+          >
             <span className="flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
               <Scale className="size-4" />
             </span>
@@ -103,7 +79,6 @@ function Masthead({ scrolled }: { scrolled: boolean }) {
           <Link to="/" hash="demo-cases" className={cn(nav, "font-medium text-foreground")}>
             Try a Demo Case
           </Link>
-          <StatusBadge />
         </nav>
       </div>
     </header>
@@ -112,12 +87,20 @@ function Masthead({ scrolled }: { scrolled: boolean }) {
 
 function Footer() {
   return (
-    <footer className="mt-24 border-t border-border bg-card">
+    <footer className="relative z-10 mt-24 border-t border-border bg-card">
       <div className="mx-auto grid max-w-6xl gap-6 px-4 py-10 text-[12px] text-muted-foreground sm:grid-cols-3 sm:px-6">
         <div>
-          <div className="flex items-center gap-2 font-semibold text-foreground">
+          <Link
+            to="/"
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent("clauseiq:reset-home"));
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="press inline-flex items-center gap-2 font-semibold text-foreground hover:opacity-80"
+            title="Return to homepage"
+          >
             <Scale className="size-3.5" /> ClauseIQ
-          </div>
+          </Link>
           <p className="mt-2 max-w-xs leading-relaxed">
             Deterministic, citation-first analysis of health insurance claim repudiations in India.
           </p>
@@ -139,13 +122,15 @@ function Footer() {
 export function SiteShell({ children }: { children: ReactNode }) {
   const scrolled = useScrolled();
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="relative flex min-h-screen flex-col bg-background">
+      {/* Background blueprint grid lines across the entire application */}
+      <div className="pointer-events-none fixed inset-0 grid-paper-full z-0 opacity-80" aria-hidden />
       {/* Disclaimer and masthead travel together so the legal notice is never escapable. */}
       <div className="sticky top-0 z-50">
         <DisclaimerBar />
         <Masthead scrolled={scrolled} />
       </div>
-      <main className="flex-1">{children}</main>
+      <main className="relative z-10 flex-1">{children}</main>
       <Footer />
     </div>
   );

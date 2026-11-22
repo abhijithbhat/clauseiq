@@ -63,17 +63,24 @@ def _is_rate_limit_exception(exc: Exception) -> bool:
 
 
 def _strip_markdown_json(text: str) -> str:
-    """Clean markdown code fences from JSON text if present."""
+    """Clean markdown code fences or surrounding text from JSON string."""
     text = text.strip()
     match = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", text)
     if match:
         return match.group(1).strip()
+    first_brace = text.find("{")
+    last_brace = text.rfind("}")
+    if first_brace != -1 and last_brace != -1 and last_brace > first_brace:
+        return text[first_brace : last_brace + 1].strip()
     return text
 
 
 def _get_genai_client() -> genai.Client:
-    """Instantiate the official GenAI SDK client."""
-    return genai.Client(api_key=settings.GEMINI_API_KEY)
+    """Instantiate the official GenAI SDK client using v1beta for JSON mode and structured output."""
+    return genai.Client(
+        api_key=settings.GEMINI_API_KEY,
+        http_options={"api_version": "v1beta"},
+    )
 
 
 def generate_json(
@@ -112,11 +119,18 @@ def generate_json(
     # Enforce case call budget on cache miss
     _check_and_increment_budget(case_id)
 
+    schema_json = json.dumps(schema.model_json_schema(), indent=2)
+    augmented_prompt = (
+        f"{prompt}\n\n"
+        f"IMPORTANT: Return ONLY a valid JSON object strictly conforming to this JSON schema:\n"
+        f"```json\n{schema_json}\n```\n"
+        f"Do not include any text, reasoning, or markdown explanations outside the valid JSON object."
+    )
+
     client = _get_genai_client()
     config = types.GenerateContentConfig(
         temperature=0.0,
         response_mime_type="application/json",
-        response_schema=schema,
     )
 
     last_error: Optional[Exception] = None
@@ -126,14 +140,25 @@ def generate_json(
         try:
             response = client.models.generate_content(
                 model=model_name,
-                contents=prompt,
+                contents=augmented_prompt,
                 config=config,
             )
             raw_text = response.text or ""
             clean_json = _strip_markdown_json(raw_text)
 
-            # Validate against schema
-            parsed = schema.model_validate_json(clean_json)
+            # Validate against schema (with fallback filtering if LLM returned stray keys)
+            try:
+                parsed = schema.model_validate_json(clean_json)
+            except Exception as val_err:
+                try:
+                    raw_dict = json.loads(clean_json)
+                    if isinstance(raw_dict, dict) and hasattr(schema, "model_fields"):
+                        filtered = {k: v for k, v in raw_dict.items() if k in schema.model_fields}
+                        parsed = schema.model_validate(filtered)
+                    else:
+                        raise val_err
+                except Exception:
+                    raise val_err
 
             # Cache successful response
             set_cached_response(cache_key, clean_json)

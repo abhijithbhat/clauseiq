@@ -6,6 +6,13 @@ ClauseIQ helps Indian health insurance policyholders review claim repudiations a
 
 ---
 
+## 🌐 Live Production Deployment
+- **Frontend App (Cloudflare):** [https://app.clauseiq.workers.dev](https://app.clauseiq.workers.dev)
+- **Backend API (Render):** [https://clauseiq-15zq.onrender.com](https://clauseiq-15zq.onrender.com)
+- **API Health Check:** [https://clauseiq-15zq.onrender.com/health](https://clauseiq-15zq.onrender.com/health)
+
+---
+
 ## Setup, Testing, and Deployment (8 Steps)
 
 ### 1. Clone and configure environment variables
